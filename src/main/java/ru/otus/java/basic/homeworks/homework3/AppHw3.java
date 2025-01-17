@@ -12,10 +12,10 @@ public class AppHw3 {
         addOrSubtractAndPrint(1, 1, true);
 
         Scanner scanner = new Scanner(System.in);
-        int num_func;
+        int numFunc;
         System.out.print("Введите число от 1 до 5: ");
-        num_func = scanner.nextInt();
-        switch (num_func) {
+        numFunc = scanner.nextInt();
+        switch (numFunc) {
             case 1:
                 greetings();
                 break;
@@ -32,7 +32,7 @@ public class AppHw3 {
                 addOrSubtractAndPrint(new Random().nextInt(), new Random().nextInt(), Math.random() > 0.5);
                 break;
             default:
-                System.out.printf("нет функции соответствущей числу %d", num_func);
+                System.out.printf("нет функции соответствущей числу %d", numFunc);
                 break;
         }
     }
