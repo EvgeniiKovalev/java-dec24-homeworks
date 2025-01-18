@@ -77,6 +77,20 @@ public class AppHw5 {
         System.out.print("\nперевернутый массив ");
         printArray(arrInt13);
 
+        System.out.print("\nисходный массив ");
+        int[] arrInt14 = {1, 2};
+        printArray(arrInt14);
+        arrayReverse(arrInt14);
+        System.out.print("\nперевернутый массив ");
+        printArray(arrInt14);
+
+        System.out.print("\nисходный массив ");
+        int[] arrInt15 = {1};
+        printArray(arrInt15);
+        arrayReverse(arrInt15);
+        System.out.print("\nперевернутый массив ");
+        printArray(arrInt15);
+
 
     }
 
@@ -88,7 +102,7 @@ public class AppHw5 {
         if (arr.length % 2 == 0) {
             medianaIndex = arr.length/2;
         } else {
-            medianaIndex = arr.length / 2 - 1;
+            medianaIndex = arr.length / 2 + 1;
         }
         for (int i = arr.length - 1; i >= medianaIndex; i--) {
             tempNumber = arr[arr.length - 1 - i];
