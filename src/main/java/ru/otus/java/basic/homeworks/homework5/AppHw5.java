@@ -1,7 +1,5 @@
 package ru.otus.java.basic.homeworks.homework5;
 
-import java.util.Arrays;
-
 public class AppHw5 {
     public static void main(String[] args) {
         System.out.println("---------------Обычные задачи");
@@ -30,12 +28,12 @@ public class AppHw5 {
         int[] arrInt4 = {9, 4};
         int[] arrInt5 = {1, 1, 1, 2};
         int[] arrInt6 = {0, 0, 0};
-        FindDotArray(arrInt1);
-        FindDotArray(arrInt2);
-        FindDotArray(arrInt3);
-        FindDotArray(arrInt4);
-        FindDotArray(arrInt5);
-        FindDotArray(arrInt6);
+        findDotArray(arrInt1);
+        findDotArray(arrInt2);
+        findDotArray(arrInt3);
+        findDotArray(arrInt4);
+        findDotArray(arrInt5);
+        findDotArray(arrInt6);
 
         System.out.println("\nметод проверяющий что массив упорядочен по выбору пользователя");
         int[] arrInt8 = {-2, 1, 5};
@@ -44,24 +42,24 @@ public class AppHw5 {
         int[] arrInt11 = {2};
 
         printArray(arrInt8);
-        System.out.println(arrayIsOrdered(arrInt8, false));
+        printResultArrayIsOrdered(false, arrayIsOrdered(arrInt8, false));
         printArray(arrInt8);
-        System.out.println(arrayIsOrdered(arrInt8, true));
+        printResultArrayIsOrdered(true, arrayIsOrdered(arrInt8, true));
 
         printArray(arrInt9);
-        System.out.println(arrayIsOrdered(arrInt9, false));
+        printResultArrayIsOrdered(false, arrayIsOrdered(arrInt9, false));
         printArray(arrInt9);
-        System.out.println(arrayIsOrdered(arrInt9, true));
+        printResultArrayIsOrdered(true, arrayIsOrdered(arrInt9, true));
 
         printArray(arrInt10);
-        System.out.println(arrayIsOrdered(arrInt10, false));
+        printResultArrayIsOrdered(false, arrayIsOrdered(arrInt10, false));
         printArray(arrInt10);
-        System.out.println(arrayIsOrdered(arrInt10, true));
+        printResultArrayIsOrdered(true, arrayIsOrdered(arrInt10, true));
 
         printArray(arrInt11);
-        System.out.println(arrayIsOrdered(arrInt11, false));
+        printResultArrayIsOrdered(false, arrayIsOrdered(arrInt11, false));
         printArray(arrInt11);
-        System.out.println(arrayIsOrdered(arrInt11, true));
+        printResultArrayIsOrdered(true, arrayIsOrdered(arrInt11, true));
 
 
         System.out.println("\nметод переворачивающий массив");
@@ -72,51 +70,64 @@ public class AppHw5 {
         System.out.print("\nперевернутый массив ");
         printArray(arrInt12);
 
+        System.out.print("\nисходный массив ");
+        int[] arrInt13 = {1, 2, 3, 4};
+        printArray(arrInt13);
+        arrayReverse(arrInt13);
+        System.out.print("\nперевернутый массив ");
+        printArray(arrInt13);
+
+
     }
 
     //    Реализуйте метод, “переворачивающий" входящий массив
 //    Пример: { 1 2 3 4 } => { 4 3 2 1 }
     public static void arrayReverse(int[] arr) {
         int tempNumber;
-        for (int i = arr.length - 1; i > 0; i--) {
+        int medianaIndex;
+        if (arr.length % 2 == 0) {
+            medianaIndex = arr.length/2;
+        } else {
+            medianaIndex = arr.length / 2 - 1;
+        }
+        for (int i = arr.length - 1; i >= medianaIndex; i--) {
             tempNumber = arr[arr.length - 1 - i];
             arr[arr.length - 1 - i] = arr[i];
             arr[i] = tempNumber;
         }
     }
 
+    public static void printResultArrayIsOrdered(boolean checkIsAsc, boolean ResultArrayIsOrdered) {
+        System.out.println("\t" + (checkIsAsc ? "возрастает" : "убывает") + " " + ResultArrayIsOrdered);
+    }
+
     //    Реализуйте метод, проверяющий что все элементы массива идут в порядке убывания или
 //    возрастания (по выбору пользователя)
-    public static String arrayIsOrdered(int[] arr, boolean direction) {
-        // direction = true - проверяем возрастание, false - убывание
-        int arrIndex = direction ? 0 : arr.length - 1;
-        int itemProcessed = 0;
+    public static boolean arrayIsOrdered(int[] arr, boolean checkIsAsc) {
+        int arrIndex = checkIsAsc ? 0 : arr.length - 1;
         int itemCurrent;
         int itemPrevious = 0;
-        String res = direction ? "возрастание" : "убывание";
 
-        while (itemProcessed < arr.length) {
+        for (int i = 0; i < arr.length; i++) {
             itemCurrent = arr[arrIndex];
-
-            if ((itemProcessed > 0 && itemPrevious >= itemCurrent) || arr.length < 2) {
-                return "Нарушено " + res;
+            if ((i > 0 && itemPrevious >= itemCurrent) || arr.length < 2) {
+                return false;
             }
 
-            if (direction) {
+            if (checkIsAsc) {
                 arrIndex++;
             } else {
                 arrIndex--;
             }
             itemPrevious = itemCurrent;
-            itemProcessed++;
         }
-        return "Соблюдено " + res;
+        return true;
     }
 
     //    Реализуйте метод, проверяющий что есть "точка" в массиве, в которой сумма левой и правой части равны.
 //    Точка находится между элементами.
 //    Пример: { 1, 1, 1, 1, 1, | 5 }, { 5, | 3, 4, -2 }, { 7, 2, 2, 2 }, { 9, 4 }
-    public static void FindDotArray(int[] arr) {
+    public static void findDotArray(int[] arr) {
         String res = "";
         for (int dotIndex = 1; dotIndex < arr.length; dotIndex++) {
             int sumBeforeDot = 0;
@@ -166,12 +177,9 @@ public class AppHw5 {
             maxLengthArrays = Math.max(maxLengthArrays, i.length);
         }
         int[] resArr = new int[maxLengthArrays]; //инициализирован нулями
-        for (int i = 0; i < maxLengthArrays; i++) {
-            for (int[] ints : arr) {
-                try {
-                    resArr[i] += ints[i];
-                } catch (IndexOutOfBoundsException ignored) {
-                }
+        for (int[] ints : arr) {
+            for (int i = 0; i < ints.length; i++) {
+                resArr[i] += ints[i];
             }
         }
         return resArr;
