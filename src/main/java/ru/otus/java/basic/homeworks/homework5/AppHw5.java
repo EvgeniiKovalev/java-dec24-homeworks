@@ -118,21 +118,21 @@ public class AppHw5 {
 //    Пример: { 1, 1, 1, 1, 1, | 5 }, { 5, | 3, 4, -2 }, { 7, 2, 2, 2 }, { 9, 4 }
     public static void FindDotArray(int[] arr) {
         String res = "";
-        for (int dot_index = 1; dot_index < arr.length; dot_index++) {
+        for (int dotIndex = 1; dotIndex < arr.length; dotIndex++) {
             int sumBeforeDot = 0;
             int sumAfterDot = 0;
-            for (int i = 0; i < dot_index; i++) {
+            for (int i = 0; i < dotIndex; i++) {
                 sumBeforeDot += arr[i];
             }
 
-            for (int i = dot_index; i < arr.length; i++) {
+            for (int i = dotIndex; i < arr.length; i++) {
                 sumAfterDot += arr[i];
             }
 
             if (sumBeforeDot == sumAfterDot) {
                 res = "{ ";
                 for (int i = 0; i < arr.length; i++) {
-                    if (i == dot_index) {
+                    if (i == dotIndex) {
                         res += ", | ";
                     } else if (i > 0) {
                         res += ", ";
