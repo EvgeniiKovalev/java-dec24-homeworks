@@ -1,4 +1,4 @@
-package ru.otus.java.basic.homeworks.homework7;
+package ru.otus.java.basic.homeworks.homework10;
 /*
 Попробуйте реализовать класс по его описания: объекты класса Коробка должны иметь размеры и цвет.
 Коробку можно открывать и закрывать. Коробку можно перекрашивать. Изменить размер коробки после создания нельзя.
@@ -8,7 +8,7 @@ package ru.otus.java.basic.homeworks.homework7;
 Выполнение методов должно сопровождаться выводом сообщений в консоль.
 */
 public class Box {
-    public Color color;
+    private Color color;
     private final int width;
     private final int length;
     private final int depth;
@@ -22,31 +22,56 @@ public class Box {
         this.color = color;
     }
 
-    public boolean getIsOpened() {
+    public void toRecolor(Color color){
+        this.color = color;
+        System.out.println("Коробку перекрасили в цвет " + color);
+    }
+
+    public boolean isOpened() {
         return this.isOpened;
     }
 
-    public void setIsOpened(boolean isOpened) throws Exception {
-        if (this.isOpened == isOpened) {
-            throw new Exception("Коробка уже " + (isOpened ? "открыта" : "закрыта") + "!!!");
+    public void open() throws Exception {
+        if (this.isOpened) {
+            throw new Exception("Коробка уже открыта !!!");
         }
-        this.isOpened = isOpened;
-        System.out.println("Коробку " + (isOpened ? "открыли" : "закрыли"));
+        this.isOpened = true;
+        System.out.println("Коробку открыли");
     }
 
-    public boolean getIsEmpty() {
+    public void close() throws Exception {
+        if (!this.isOpened) {
+            throw new Exception("Коробка уже закрыта !!!");
+        }
+        this.isOpened = false;
+        System.out.println("Коробку закрыли");
+    }
+
+    public boolean isEmpty() {
         return this.isEmpty;
     }
 
-    public void setIsEmpty(boolean isEmpty) throws Exception {
+    public void put() throws Exception {
         if (!this.isOpened) {
-            throw new Exception("Коробка закрыта, чтобы освободить/заполнить коробку сначала откройте коробку !!!");
+            throw new Exception("Коробка закрыта, чтобы заполнить коробку сначала откройте коробку !!!");
         }
-        if (this.isEmpty == isEmpty) {
-            throw new Exception("Коробка " + (this.isEmpty ? "пуста" : "заполнена"));
+        if (!this.isEmpty) {
+            throw new Exception("Коробка уже заполнена !!!");
         }
-        this.isEmpty = isEmpty;
-        System.out.println("Коробку " + (isEmpty ? "освободили" : "заполнили"));
+        this.isEmpty = false;
+        System.out.println("Коробку заполнили");
+    }
+
+
+    public void clear() throws Exception {
+        if (!this.isOpened) {
+            throw new Exception("Коробка закрыта, чтобы освободить коробку сначала откройте коробку !!!");
+        }
+        if (this.isEmpty) {
+            throw new Exception("Коробка уже пуста !!!");
+        }
+        this.isEmpty = true;
+        System.out.println("Коробку освободили");
     }
 
     @Override

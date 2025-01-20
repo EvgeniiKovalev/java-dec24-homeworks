@@ -1,4 +1,4 @@
-package ru.otus.java.basic.homeworks.homework7;
+package ru.otus.java.basic.homeworks.homework10;
 
 /*
 Создайте класс Пользователь (User) с полями: фамилия, имя, отчество, год рождения, email;
@@ -11,7 +11,7 @@ e-mail: email
 помощью цикла выведите информацию только о пользователях старше 40 лет.
  */
 public class User {
-    public int yearOfBirth;
+    private int yearOfBirth;
     private String surname;
     private String name;
     private String middleName;
@@ -23,6 +23,10 @@ public class User {
         this.middleName = middleName;
         this.yearOfBirth = yearOfBirth;
         this.email = email;
+    }
+
+    public int getYearOfBirth() {
+        return yearOfBirth;
     }
 
     @Override
