@@ -18,7 +18,7 @@ public class Horse extends Animal implements Swimable{
             return -1;
         }
         stamina -= staminaForSwim*distance;
-        return distance/swimSpeed;
+        return Math.round(((float)distance)/swimSpeed);
     }
 
     @Override
