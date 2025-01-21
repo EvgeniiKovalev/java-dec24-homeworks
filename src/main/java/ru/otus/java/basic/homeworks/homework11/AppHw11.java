@@ -10,7 +10,7 @@ public class AppHw11 {
         System.out.println(cat);
         //System.out.println(cat.run(10));
         //обычный бег
-        Tester.testRun(TestAction.RUN, 10, cat);
+        Tester.testRun(TestAction.RUN, 10, cat); // почему так работает, что можно не создавать экземпляр класса Tester ?
         cat.info();
         System.out.println(cat);
         //тест усталости при беге
