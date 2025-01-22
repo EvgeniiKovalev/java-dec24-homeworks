@@ -43,6 +43,6 @@ public class Plate {
 
     @Override
     public String toString() {
-        return "Plate{ currentVolume=" + currentVolume + ", maxVolume=" + maxVolume + '}';
+        return String.format("Plate{currentVolume=%d, maxVolume=%d}", currentVolume, maxVolume);
     }
 }

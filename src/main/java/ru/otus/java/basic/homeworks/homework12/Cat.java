@@ -30,6 +30,6 @@ public class Cat {
 
     @Override
     public String toString() {
-        return "Cat{ name='" + name + '\'' +", satiety=" + satiety +", appetite=" + appetite +'}';
+        return String.format("Cat{name='%s', satiety=%b, appetite=%d}", name, satiety, appetite);
     }
 }
