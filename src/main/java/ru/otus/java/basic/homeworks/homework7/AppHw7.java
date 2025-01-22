@@ -1,8 +1,6 @@
 package ru.otus.java.basic.homeworks.homework7;
 
-import java.util.Arrays;
-
-import static ru.otus.java.basic.homeworks.homework7.AppHw7.Diagonal.*;
+import static ru.otus.java.basic.homeworks.homework7.Diagonal.*;
 
 public class AppHw7 {
 
@@ -76,27 +74,27 @@ public class AppHw7 {
         System.out.println("сумма элементов второй строки = " + sumSecondRow(arrInt2));
 
 
-//        System.out.println("------------------- тест1 работы с параметрами");
-//        Diagonal[] arrParam = {Diagonal.FROMLEFT,Diagonal.FROMRIGHT};
-//        testParam1(1, arrParam);
-//
-//        System.out.println("------------------- тест2 работы с параметрами");
-//        testParam2(2, Diagonal.FROMLEFT, Diagonal.FROMRIGHT);
+        System.out.println("------------------- тест1 работы с параметрами");
+        Diagonal[] arrParam = {Diagonal.FROMLEFT,Diagonal.FROMRIGHT};
+        testParam1(1, arrParam);
+
+        System.out.println("------------------- тест2 работы с параметрами");
+        testParam2(2, Diagonal.FROMLEFT, Diagonal.FROMRIGHT);
     }
 
-//    public static void testParam1(int a, Diagonal[] args) {
-//        System.out.println("a=" + a);
-//        for (int i = 0; i < args.length; i++) {
-//            System.out.println("args["+i+"]="+args[i]);
-//        }
-//    }
-//
-//    public static void testParam2(int a, Diagonal ... args) {
-//        System.out.println("a=" + a);
-//        for (int i = 0; i < args.length; i++) {
-//            System.out.println("args["+i+"]="+args[i]);
-//        }
-//    }
+    public static void testParam1(int a, Diagonal[] args) {
+        System.out.println("a=" + a);
+        for (int i = 0; i < args.length; i++) {
+            System.out.println("args["+i+"]="+args[i]);
+        }
+    }
+
+    public static void testParam2(int a, Diagonal ... args) {
+        System.out.println("a=" + a);
+        for (int i = 0; i < args.length; i++) {
+            System.out.println("args["+i+"]="+args[i]);
+        }
+    }
 
     //Реализуйте метод, который считает сумму элементов второй строки двумерного массива,
     // если второй строки не существует, то в качестве результата необходимо вернуть -1
@@ -114,10 +112,10 @@ public class AppHw7 {
     //Реализовать метод findMax(int[][] array) который должен найти и вернуть максимальный элемент массива
     public static int findMax(int[][] array) {
         int result = array[0][0];
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] > result) {
-                    result = array[i][j];
+        for (int[] ints : array) {
+            for (int anInt : ints) {
+                if (anInt > result) {
+                    result = anInt;
                 }
             }
         }
@@ -164,12 +162,12 @@ public class AppHw7 {
     }
 
     public static void printTwoDimensionalArrayOfInt(int[][] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            System.out.print(arr[i][0]);
-            for (int j = 1; j < arr[i].length - 1; j++) {
-                System.out.print(", " + arr[i][j]);
+        for (int[] ints : arr) {
+            System.out.print(ints[0]);
+            for (int j = 1; j < ints.length - 1; j++) {
+                System.out.print(", " + ints[j]);
             }
-            System.out.println(", " + arr[i][arr[i].length - 1]);
+            System.out.println(", " + ints[ints.length - 1]);
         }
     }
 
@@ -177,18 +175,18 @@ public class AppHw7 {
     // печатает в консоль квадрат из символов * со сторонами соответствующей длины
     public static void DrawSquare(int size) {
         for (int height = 0; height < size; height++) {
-            String lineString = "*";
+            System.out.print("*");
             for (int width = 1; width < size - 1; width++) {
                 if (height == 0 || height == size - 1) {
-                    lineString += "*";
+                    System.out.print("*");
                 } else {
-                    lineString += " ";
+                    System.out.print(" ");
                 }
             }
             if (size > 1) {
-                System.out.println(lineString + "*");
+                System.out.println("*");
             } else {
-                System.out.println(lineString);
+                System.out.println();
             }
         }
     }
@@ -197,19 +195,14 @@ public class AppHw7 {
     //метод должен посчитать и вернуть сумму всех элементов массива, которые больше 0
     public static int sumOfPositiveElements(int[][] arrNumbers) {
         int result = 0;
-        for (int i = 0; i < arrNumbers.length; i++) {
-            for (int j = 0; j < arrNumbers[i].length; j++) {
-                if (arrNumbers[i][j] > 0) {
-                    result += arrNumbers[i][j];
+        for (int[] arrNumber : arrNumbers) {
+            for (int i : arrNumber) {
+                if (i > 0) {
+                    result += i;
                 }
             }
         }
         return result;
-    }
-
-
-    enum Diagonal {
-        FROMLEFT, FROMRIGHT, ALL, UNKNOWN
     }
 
 }
