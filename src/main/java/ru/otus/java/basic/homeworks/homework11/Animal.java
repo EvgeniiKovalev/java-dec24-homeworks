@@ -1,10 +1,30 @@
 package ru.otus.java.basic.homeworks.homework11;
 
 public abstract class Animal {
-    protected String name;
-    protected int runSpeed;
-    protected int stamina;
-    protected final int staminaForRun = 1;
+    private final String name;
+    private final int runSpeed;
+    private int stamina;
+    private final int staminaForRun = 1;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public int getRunSpeed() {
+        return this.runSpeed;
+    }
+
+    public int getStamina() {
+        return stamina;
+    }
+
+    public void setStamina(int stamina) {
+        this.stamina -= stamina;
+    }
+
+    public int getStaminaForRun() {
+        return staminaForRun;
+    }
 
     protected int run(int distance) {
         System.out.println("'" + name + "' бежит дистанцию " + distance);
@@ -17,7 +37,7 @@ public abstract class Animal {
     }
 
     protected void info() {
-        System.out.println("состояние '" + name + "' " + stamina);
+        System.out.printf("состояние '%s' %d\n", name, stamina);
     }
 
     public Animal(String name, int runSpeed, int stamina) {

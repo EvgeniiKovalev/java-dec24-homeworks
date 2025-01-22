@@ -8,11 +8,7 @@ public class Cat extends Animal {
 
     @Override
     public String toString() {
-        return "Cat{" +
-                "name='" + name + '\'' +
-                ", runSpeed=" + runSpeed +
-                ", stamina=" + stamina +
-                ", staminaForRun=" + staminaForRun +
-                '}';
+        return String.format("Cat{name='%s', runSpeed=%d, stamina=%d, staminaForRun=%d}",
+                getName(), getRunSpeed(), getStamina(), getStaminaForRun());
     }
 }

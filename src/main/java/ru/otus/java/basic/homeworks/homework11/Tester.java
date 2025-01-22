@@ -3,18 +3,20 @@ package ru.otus.java.basic.homeworks.homework11;
 public class Tester {
     public static void testRun(TestAction testAction, int distance, Object obj) {
         if (testAction == TestAction.RUN) {
-            int sec =  ((Animal)obj).run(distance);
-            if (sec > 0) {
-                System.out.println("'" + ((Animal)obj).name + "' пробежал расстояние " + distance + "м за " + sec + " секунд");
+            if (obj instanceof Animal) {
+                int sec = ((Animal) obj).run(distance);
+                if (sec > 0) {
+                    System.out.printf("'%s' пробежал расстояние %dм за %d секунд\n", ((Animal) obj).getName(), distance, sec);
+                }
             }
-
         }
         else if (testAction == TestAction.SWIM) {
-            int sec =  ((Swimable)obj).swim(distance);
-            if (sec > 0 ) {
-                System.out.println("'" + ((Animal) obj).name + "' проплыл расстояние " + distance + "м за " + sec + " секунд");
+            if (obj instanceof Swimable) {
+                int sec = ((Swimable) obj).swim(distance);
+                if (sec > 0) {
+                    System.out.printf("'%s' проплыл расстояние %dм за %d секунд\n", ((Animal) obj).getName(), distance, sec);
+                }
             }
         }
-
     }
 }
