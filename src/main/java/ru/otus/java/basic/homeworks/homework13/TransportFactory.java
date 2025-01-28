@@ -2,7 +2,7 @@ package ru.otus.java.basic.homeworks.homework13;
 
 public class TransportFactory {
     public Transport createTransport(TransportType type) {
-        Transport transport = null;
+        Transport transport;
         switch (type) {
             case CAR:
                 transport = new Car();
@@ -16,6 +16,8 @@ public class TransportFactory {
             case OFFROADER:
                 transport = new Offroader();
                 break;
+            default:
+                transport = null;
         }
         return transport;
     }
