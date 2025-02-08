@@ -9,17 +9,34 @@ public class Car extends Transport {
     private final int fuelConsumption = 1;
     private float fuel = 100.0f;
 
+    public Car() {
+        super(Area.SWAMP, Area.FOREST);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        Car other = (Car) obj;
+        return other.fuel == fuel && other.driver == driver;
+    }
+
     @Override
     public String toString() {
-        return String.format("Car{fuelConsumption=%d, fuel=%.2f}", fuelConsumption, fuel);
+        if (driver != null) {
+            return String.format("Car{driver=%s, rejectedArea=%s, fuelConsumption=%d, fuel=%.2f}", driver.getName(), listRejectedArea(), fuelConsumption, fuel);
+        }
+        return String.format("Car{driver=%s, rejectedArea=%s, fuelConsumption=%d, fuel=%.2f}", "NULL", listRejectedArea(), fuelConsumption, fuel);
     }
 
     @Override
     public boolean move(Area area, int distance) {
-        if (area == Area.FOREST || area == Area.SWAMP) {
+        if (isRejectedAreaType(area)) {
             System.out.println("Машина не ездит по " + area);
             return false;
-        } else if (fuel < (float) distance * fuelConsumption / 100) {
+        }
+        if (fuel < (float) distance * fuelConsumption / 100) {
             System.out.println("У машины не хватает топлива для поездки на расстояние " + distance);
             return false;
         }

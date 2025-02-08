@@ -9,17 +9,34 @@ public class Horse extends Transport {
     private final int powerConsumption = 10;
     private float power = 50f;
 
+    public Horse() {
+        super(Area.SWAMP);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        Horse other = (Horse) obj;
+        return other.power == power && other.driver == driver;
+    }
+
     @Override
     public String toString() {
-        return String.format("Horse{powerConsumption=%d, power=%.2f}", powerConsumption, power);
+        if (driver != null) {
+            return String.format("Horse{driver=%s, rejectedArea=%s, powerConsumption=%d, power=%.2f}", driver.getName(), listRejectedArea(), powerConsumption, power);
+        }
+        return String.format("Horse{driver=%s, rejectedArea=%s, powerConsumption=%d, power=%.2f}", "NULL", listRejectedArea(), powerConsumption, power);
     }
 
     @Override
     public boolean move(Area area, int distance) {
-        if (area == Area.SWAMP) {
+        if (isRejectedAreaType(area)) {
             System.out.println("Лошадь не ездит по " + area);
             return false;
-        } else if (power < (float) distance * powerConsumption / 100) {
+        }
+        if (power < (float) distance * powerConsumption / 100) {
             System.out.println("У лошади не хватает сил для поездки на расстояние " + distance);
             return false;
         }
