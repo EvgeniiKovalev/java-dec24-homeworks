@@ -15,12 +15,9 @@ public class Offroader extends Transport {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         Offroader other = (Offroader) obj;
         return other.fuel == fuel && other.driver == driver;
     }
@@ -28,11 +25,9 @@ public class Offroader extends Transport {
     @Override
     public String toString() {
         if (driver != null) {
-            return String.format("Offroader{driver=%s, rejectedArea=%s, fuelConsumption=%d, fuel=%.2f}", driver.getName(),
-                    listRejectedArea(), fuelConsumption, fuel);
+            return String.format("Offroader{driver=%s, rejectedArea=%s, fuelConsumption=%d, fuel=%.2f}", driver.getName(), listRejectedArea(), fuelConsumption, fuel);
         }
-        return String.format("Offroader{driver=%s, rejectedArea=%s, fuelConsumption=%d, fuel=%.2f}", "NULL",
-                listRejectedArea(), fuelConsumption, fuel);
+        return String.format("Offroader{driver=%s, rejectedArea=%s, fuelConsumption=%d, fuel=%.2f}", "NULL", listRejectedArea(), fuelConsumption, fuel);
     }
 
     @Override

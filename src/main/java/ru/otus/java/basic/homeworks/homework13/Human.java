@@ -11,12 +11,12 @@ public class Human {
     private float power = 20f;
     private Transport currentTransport;
 
-    String getName() {
-        return name;
-    }
-
     public Human(String name) {
         this.name = name;
+    }
+
+    String getName() {
+        return name;
     }
 
     public float getPower() {
@@ -47,13 +47,12 @@ public class Human {
     }
 
     public boolean getUp() {
-        if (currentTransport != null) {
-            currentTransport.setDriver(null);
-            currentTransport = null;
-            return true;
-        } else {
+        if (currentTransport == null) {
             return false;
         }
+        currentTransport.setDriver(null);
+        currentTransport = null;
+        return true;
     }
 
 

@@ -7,7 +7,7 @@ public abstract class Transport {
     protected final ArrayList<Area> rejectedArea;
     protected Human driver;
 
-    public Transport(Area...array) {
+    public Transport(Area... array) {
         rejectedArea = new ArrayList<>();
         rejectedArea.addAll(Arrays.asList(array));
     }
