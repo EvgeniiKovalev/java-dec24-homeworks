@@ -77,19 +77,17 @@ public class AppHw15 {
                         result += Integer.parseInt(arr[i][j]);
                     }
                     catch (NumberFormatException e) {
-                        throw new AppArrayDataException("неверные данные в ячейке ", i, j);
+                        throw new AppArrayDataException(String.format("Ошибка в ячейке [%d,%d]: '%s' не является числом", i, j, arr[i][j]), i, j);
+
                     }
             }
         }
         return result;
     }
     public static void printArray(String[][] arr) {
-        for (String[] strArr : arr) {
-            for (int j = 0; j < strArr.length - 1; j++) {
-                System.out.print((j > 0 ? ", ":"") + strArr[j]);
-            }
-            System.out.println(", " + strArr[strArr.length - 1]);
+        for (String[] row : arr) {
+            System.out.println(String.join(" ,", row));
         }
-    }    
+    }
     
 }
