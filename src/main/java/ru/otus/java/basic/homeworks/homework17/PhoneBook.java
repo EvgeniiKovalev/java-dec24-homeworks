@@ -1,13 +1,10 @@
 package ru.otus.java.basic.homeworks.homework17;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class PhoneBook {
-    private final Map<String, String> mapPhonebook;
+    private final Map<String, Set<String>> mapPhonebook;
 
     public PhoneBook(int initialCapacity) {
         mapPhonebook = new HashMap<>(initialCapacity);
@@ -19,32 +16,47 @@ public class PhoneBook {
     }
 
     public void add(String fio, String phoneNumber) {
-        mapPhonebook.put(fio, phoneNumber);
+        if (!mapPhonebook.containsKey(fio)) {
+            HashSet<String> set = new HashSet<>();
+            if (set.add(phoneNumber)) {
+                mapPhonebook.put(fio, set);
+            }
+        } else {
+            mapPhonebook.get(fio).add(phoneNumber);
+        }
     }
 
     /**
      * вернет значение по ключу
+     *
      * @param fio - фио(ключ)
      * @return - значение по ключу
      */
-    public String find(String fio) {
-        return mapPhonebook.get(fio);
+    public HashSet<String> find(String fio) {
+        return (HashSet<String>) mapPhonebook.get(fio);
     }
 
     /**
      * проверка наличия по значению(номеру телефона)
+     *
      * @param phoneNumber - номер телефона
      */
-    public void containsPhoneNumber(String phoneNumber) {
-        System.out.println(mapPhonebook.containsValue(phoneNumber));
+    public boolean containsPhoneNumber(String phoneNumber) {
+        for (Set<String> elem : mapPhonebook.values()) {
+            if (elem.contains(phoneNumber)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * проверка наличия по ключу(фио)
+     *
      * @param fio - фио
      */
-    public void containsFio(String fio) {
-        System.out.println(mapPhonebook.containsKey(fio));
+    public boolean containsFio(String fio) {
+        return mapPhonebook.containsKey(fio);
     }
 
     /**
@@ -66,7 +78,7 @@ public class PhoneBook {
             }
         }
         //вариант 2 фильтрация по записям при помощи Stream API
-        Stream<Map.Entry<String, String>> stream = mapPhonebook.entrySet().stream();
+        Stream<Map.Entry<String, Set<String>>> stream = mapPhonebook.entrySet().stream();
         stream.filter(entry -> entry.getKey().contains(fio)).forEach((elementHashMap) -> System.out.println("вариант2: " + elementHashMap));
     }
 }

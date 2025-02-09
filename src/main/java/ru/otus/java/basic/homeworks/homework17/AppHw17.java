@@ -29,7 +29,11 @@ public class AppHw17 {
         PhoneBook phoneBook = new PhoneBook(10);
         System.out.println("ТЕСТ 1 add");
         phoneBook.add("fio1", "+7-922-232-21-21");
+        phoneBook.add("fio1", "+7-922-232-21-22");
+        phoneBook.add("fio2", "+7-922-232-22-21");
         phoneBook.add("fio2", "+7-922-232-22-22");
+        phoneBook.add("fi3", "+7-922-232-23-21");
+        phoneBook.add("fi3", "+7-922-232-23-22");
         phoneBook.add("fi3", "+7-922-232-23-23");
         System.out.println(phoneBook);
 
@@ -37,12 +41,12 @@ public class AppHw17 {
         System.out.println("найден номер телефона по фио: " + phoneBook.find("fio1"));
 
         System.out.println("ТЕСТ 3 containsPhoneNumber");
-        phoneBook.containsPhoneNumber("+7-922-232-21-21");
+        System.out.println(phoneBook.containsPhoneNumber("+7-922-232-21-21"));
 
         System.out.println("ТЕСТ 4 containsFio");
-        phoneBook.containsFio("fio1");
+        System.out.println(phoneBook.containsFio("fio1"));
 
         System.out.println("ТЕСТ 5 getEntryLikeByFio");
-        phoneBook.getEntryLikeByFio("fio");
+        phoneBook.getEntryLikeByFio("fi");
     }
 }
