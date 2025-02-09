@@ -2,44 +2,10 @@ package ru.otus.java.basic.homeworks.homework16;
 
 import java.util.ArrayList;
 
-/**
- * <pre>
- * Домашнее задание
- * Работа со списками
- *
- * Цель: научиться работать со списками.
- *
- * Описание/Пошаговая инструкция выполнения домашнего задания:
- *
- * Реализуйте метод, принимающий в качестве аргументов числа min и max, и возвращающий ArrayList с набором
- * последовательных значений в указанном диапазоне (min и max включительно, шаг - 1);
- *
- * Реализуйте метод, принимающий в качестве аргумента список целых чисел, суммирующий все элементы,
- * значение которых больше 5, и возвращающий сумму;
- *
- * Реализуйте метод, принимающий в качестве аргументов целое число и ссылку на список,
- * метод должен переписать каждую заполненную ячейку списка указанным числом;
- *
- * Реализуйте метод, принимающий в качестве аргументов целое число и ссылку на список,
- * увеличивающий каждый элемент списка на указанное число;
- *
- * Создайте класс Сотрудник с полями: имя, возраст;
- *    - Реализуйте метод, принимающий в качестве аргумента список сотрудников, и возвращающий список их имен;
- *
- *    - Реализуйте метод, принимающий в качестве аргумента список сотрудников и минимальный возраст,
- *      и возвращающий список сотрудников, возраст которых больше либо равен указанному аргументу;
- *
- *    - Реализуйте метод, принимающий в качестве аргумента список сотрудников и минимальный средний возраст,
- *      и проверяющий что средний возраст сотрудников превышает указанный аргумент;
- *
- *    - Реализуйте метод, принимающий в качестве аргумента список сотрудников,
- *      и возвращающий ссылку на самого молодого сотрудника.
- * </pre>
- */
 public class AppHw16 {
     public static void main(String[] args) {
         System.out.println("ТЕСТ 1 getArrayList");
-        ArrayList<Integer> intList = getArrayList(-4, 10);
+        ArrayList<Integer> intList = getArrayList(-40, 10);
         System.out.println("список целых чисел:" + intList);
 
         System.out.println("ТЕСТ 2 sumMoreFiveInArrayList");
@@ -85,41 +51,24 @@ public class AppHw16 {
 
     public static int sumMoreFiveInArrayList(ArrayList<Integer> arrayList) {
         int result = 0;
-        //вар1
-        for (Integer integer : arrayList) {
-            result += integer;
+        for (int i : arrayList) {
+            if (i > 5 ) result += i;
         }
-
-        //вар2
-//        for (int i: arrayList) {
-//            result += i;
-//        }
         return result;
     }
 
     public static void fillArrayList(ArrayList<Integer> arrayList, int number) {
-        //вар1
         for (int i = 0; i < arrayList.size(); i++) {
             arrayList.set(i, number);
         }
-
-        //вар2
-        //arrayList.replaceAll(n -> number);
     }
 
     public static void incArrayList(ArrayList<Integer> arrayList, int number) {
-        //вар1
         for (int i = 0; i < arrayList.size(); i++) {
             arrayList.set(i, arrayList.get(i) + number);
         }
-
-        //вар2
-        //arrayList.replaceAll(n -> n + number);
     }
 
-    /**
-     * Реализуйте метод, принимающий в качестве аргумента список сотрудников, и возвращающий список их имен;
-     */
     public static ArrayList<String> printNameEmployee(ArrayList<Employee> listEmployee) {
         ArrayList<String> result = new ArrayList<>();
         for (Employee e : listEmployee) {
@@ -128,26 +77,16 @@ public class AppHw16 {
         return result;
     }
 
-    /**
-     * Реализуйте метод, принимающий в качестве аргумента список сотрудников и минимальный возраст,
-     * и возвращающий список сотрудников, возраст которых больше либо равен указанному аргументу;
-     */
     public static ArrayList<Employee> olderEmployee(ArrayList<Employee> listEmployee, int minAge) {
         ArrayList<Employee> result = new ArrayList<>();
         for (Employee e : listEmployee) {
-            if (minAge < e.getAge()) {
+            if (minAge <= e.getAge()) {
                 result.add(e);
             }
         }
         return result;
     }
 
-    /**
-     * Реализуйте метод, принимающий в качестве аргумента список сотрудников и минимальный средний возраст,
-     * и проверяющий что средний возраст сотрудников превышает указанный аргумент;
-     *
-     * @param avgAge -ссылка на массив из одного элемента, значение в котороем после завершения работы метода будет средний возраст
-     */
     public static boolean checkAverageAgerEmployee(ArrayList<Employee> listEmployee, int minAge, int[] avgAge) {
         for (Employee e : listEmployee) {
             avgAge[0] += e.getAge();
@@ -157,10 +96,6 @@ public class AppHw16 {
     }
 
 
-    /**
-     * Реализуйте метод, принимающий в качестве аргумента список сотрудников,
-     * и возвращающий ссылку на самого молодого сотрудника.
-     */
     public static Employee youngEmployee(ArrayList<Employee> listEmployee) {
         Employee res = listEmployee.get(0);
         for (Employee employee : listEmployee) {
