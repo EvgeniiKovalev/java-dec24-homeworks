@@ -10,7 +10,6 @@ public class SearchTreeNode implements SearchTree<Node> {
     private final Random rand = new Random();
     private Node root;
     private Node firstNode;
-    private Node leftNode;
     private Node currentRoot;
 
     public Node getRoot() {
@@ -24,11 +23,11 @@ public class SearchTreeNode implements SearchTree<Node> {
      * создаст сортированное бинарное дерево, запоминает корневой элемент
      *
      * @param amountElements количество элементов
-     * @return корневой элемент
+     * вернет корневой элемент
      */
     void buildBinaryTree(int amountElements) {
         List<Position> pos = of(Position.values());
-        leftNode = null;
+        Node leftNode = null;
         int j = 0;
         for (int i = 1; i <= amountElements; i++) {
             j += 1000;
@@ -44,15 +43,6 @@ public class SearchTreeNode implements SearchTree<Node> {
         currentRoot = root;
     }
 
-    /*
-    Node search(x : Node, k : T)
-       if x == null or k == x.key
-          return x
-       if k < x.key
-          return search(x.left, k)
-       else
-          return search(x.right, k)
-    */
     @Override
     public Node find(Node element) {
         if (currentRoot == null) return null;//не нашли и дерево закончилось
@@ -68,11 +58,8 @@ public class SearchTreeNode implements SearchTree<Node> {
             return find(element);
         }
         //искомый элемент правее
-        if (resultCompare > 0) {
-            currentRoot = currentRoot.getRight();
-            return find(element);
-        }
-        return null;
+        currentRoot = currentRoot.getRight();
+        return find(element);
     }
 
     @Override
