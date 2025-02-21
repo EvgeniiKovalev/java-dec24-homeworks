@@ -1,6 +1,8 @@
 package ru.otus.java.basic.homeworks.homework18;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -36,58 +38,108 @@ import java.util.Random;
  * </pre>
  */
 public class AppHw18 {
-
     public static void main(String[] args) {
-        PersonDataBase binaryTree = new PersonDataBase();
-        System.out.println("тест add");
-        binaryTree.add(new Person("1", Position.MANAGER, 1L));
-        binaryTree.add(new Person("12", Position.MANAGER, 1L));
-        binaryTree.add(new Person("2", Position.DEVELOPER, 2L));
-        binaryTree.add(new Person("2", Position.DEVELOPER, 2L));
-        System.out.println("размер коллекции = " + binaryTree.size());
-        System.out.println();
+        List<Task> taskListForRun = new ArrayList<>();
+        taskListForRun.add(Task.TASK1);
+        taskListForRun.add(Task.TASK2);
+        taskListForRun.add(Task.TASK3);
+        taskListForRun.add(Task.TASKJENERICS);
 
-        System.out.println("тест findNode");
-        Node node1 = binaryTree.findNode(1L);
-        System.out.println(node1);
-        Node node2 = binaryTree.findNode(2L);
-        System.out.println(node2);
-        System.out.println();
 
-        System.out.println("тест findById");
-        System.out.println(binaryTree.findById(1L));
-        System.out.println();
+        if (taskListForRun.contains(Task.TASK1)) {
+            System.out.println("Task1 -- двоичное дерево с методами поиска с асимптотической сложность O(1)");
+            PersonDataBase binaryTree = new PersonDataBase();
+            System.out.println("тест add");
+            binaryTree.add(new Person("1", Position.MANAGER, 1L));
+            binaryTree.add(new Person("12", Position.MANAGER, 1L));
+            binaryTree.add(new Person("2", Position.DEVELOPER, 2L));
+            binaryTree.add(new Person("2", Position.DEVELOPER, 2L));
+            System.out.println("размер коллекции = " + binaryTree.size());
+            System.out.println();
 
-        System.out.println(binaryTree.findById(12L));
-        System.out.println();
+            System.out.println("тест findNode");
+            Node node1 = binaryTree.findNode(1L);
+            System.out.println(node1);
+            Node node2 = binaryTree.findNode(2L);
+            System.out.println(node2);
+            System.out.println();
 
-        System.out.println("тест isManager");
-        System.out.println("позиция = " + binaryTree.findNode(1L).getPerson().getPosition() + " isManager = " + binaryTree.isManager(binaryTree.findById(1L)));
-        System.out.println("позиция = " + binaryTree.findNode(2L).getPerson().getPosition() + " isManager = " + binaryTree.isManager(binaryTree.findById(2L)));
-        System.out.println();
+            System.out.println("тест findById");
+            System.out.println("нашли элемент: " + binaryTree.findById(1L));
+            System.out.println("Не нашли элемент который не должен был вставлен как повторяющийся: " + binaryTree.findById(12L));
+            System.out.println();
 
-        System.out.println("тест isEmployee");
-        System.out.println("позиция = " + binaryTree.findNode(1L).getPerson().getPosition() + " isEmployee = " + binaryTree.isEmployee(1L));
-        System.out.println("позиция = " + binaryTree.findNode(2L).getPerson().getPosition() + " isEmployee = " + binaryTree.isEmployee(2L));
+            System.out.println("тест isManager");
+            System.out.println("позиция = " + binaryTree.findNode(1L).getPerson().getPosition() + " isManager = " + binaryTree.isManager(binaryTree.findById(1L)));
+            System.out.println("позиция = " + binaryTree.findNode(2L).getPerson().getPosition() + " isManager = " + binaryTree.isManager(binaryTree.findById(2L)));
+            System.out.println();
 
-        System.out.println("Сортировка пузырьком на массиве случайных чисел");
-        Sorting.randomFillArray(10);
-        System.out.println("    до сортировки     " + Arrays.toString(Sorting.testData));
-        Sorting.bubbleSort(Sorting.testData);
-        System.out.println("    после сортировки  " + Arrays.toString(Sorting.testData));
-        System.out.println();
+            System.out.println("тест isEmployee");
+            System.out.println("позиция = " + binaryTree.findNode(1L).getPerson().getPosition() + " isEmployee = " + binaryTree.isEmployee(1L));
+            System.out.println("позиция = " + binaryTree.findNode(2L).getPerson().getPosition() + " isEmployee = " + binaryTree.isEmployee(2L));
+            System.out.println();
+        }
 
-        System.out.println("Быстрая сортировка на массиве с гарантированно повторяющимися элементами");
-        System.out.println("    до сортировки     " + Arrays.toString(Sorting.testData2));
-        Sorting.quickSort(Sorting.testData2, 0, Sorting.testData2.length-1);
-        System.out.println("    после сортировки  " + Arrays.toString(Sorting.testData2));
-        System.out.println();
-        System.out.println("Быстрая сортировка на массиве случайных чисел");
-        Sorting.randomFillArray(10);
-        System.out.println("    до сортировки     " + Arrays.toString(Sorting.testData));
-        Sorting.quickSort(Sorting.testData, 0, Sorting.testData.length-1);
-        System.out.println("    после сортировки  " + Arrays.toString(Sorting.testData));
-        System.out.println();
+        if (taskListForRun.contains(Task.TASK2)) {
+            System.out.println("Task2 -- СОРТИРОВКИ");
+
+            System.out.println("Сортировка пузырьком на массиве случайных чисел");
+            Sorting.randomFillArray(10);
+            System.out.println("    до сортировки     " + Arrays.toString(Sorting.testData));
+            Sorting.bubbleSort(Sorting.testData);
+            System.out.println("    после сортировки  " + Arrays.toString(Sorting.testData));
+            System.out.println();
+
+            System.out.println("Быстрая сортировка на массиве с гарантированно повторяющимися элементами");
+            System.out.println("    до сортировки     " + Arrays.toString(Sorting.testData2));
+            Sorting.quickSort(Sorting.testData2, 0, Sorting.testData2.length - 1);
+            System.out.println("    после сортировки  " + Arrays.toString(Sorting.testData2));
+            System.out.println();
+
+            System.out.println("Быстрая сортировка на массиве случайных чисел");
+            Sorting.randomFillArray(10);
+            System.out.println("    до сортировки     " + Arrays.toString(Sorting.testData));
+            Sorting.quickSort(Sorting.testData, 0, Sorting.testData.length - 1);
+            System.out.println("    после сортировки  " + Arrays.toString(Sorting.testData));
+            System.out.println();
+        }
+
+        if (taskListForRun.contains(Task.TASK3)) {
+            System.out.println("Task3 -- задача о бинарном поиске");
+
+            SearchTreeNode searchTreeNode = new SearchTreeNode();
+            searchTreeNode.buildBinaryTree(10);
+            System.out.println("Корень дерева: " + searchTreeNode.getRoot());
+            System.out.println("--тест find");
+
+            Node node = new Node(
+                    new Person("name 2000", Position.MANAGER, 2000L)
+            );
+            //"результат поиска " +
+            System.out.println("результат поиска: " + searchTreeNode.find(node));
+            System.out.println();
+
+
+            System.out.println("--тест getSortedList");
+            List<Node> list = searchTreeNode.getSortedList();
+            for (int i = 0; i < list.size() ; i++) {
+                System.out.println("   " + list.get(i));
+            }
+            System.out.println();
+        }
+
+        if (taskListForRun.contains(Task.TASKJENERICS)) {
+            System.out.println("TASKJENERICS -- задача по практике с дженериками");
+            JenericsPractice testJeneric = new JenericsPractice(10);
+
+            System.out.println("Вывод четных элементов");
+            testJeneric.printList(true);
+            System.out.println();
+
+            System.out.println("Вывод нечетных элементов");
+            testJeneric.printList(false);
+            System.out.println();
+        }
     }
 
     public static class Sorting {
@@ -159,5 +211,6 @@ public class AppHw18 {
 
         }
     }
+
 }
 
