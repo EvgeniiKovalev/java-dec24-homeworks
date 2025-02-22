@@ -13,21 +13,21 @@ public class Plate {
         this.currentVolume = maxVolume;
     }
 
-    public void addFood(int volume) throws Exception {
+    public void addFood(int volume) throws IllegalArgumentException {
         //правильно ли использовать для проверки входных данных Exception, как это сделано строкой ниже ?
         if (volume <= 0) {
-            throw new Exception("Количество еды должно быть > 0");
+            throw new IllegalArgumentException("Количество еды должно быть > 0");
         }
         //правильно ли использовать для проверки бизнес требований Exception, как это сделано строкой ниже ?
         if (currentVolume + volume > maxVolume) {
-            throw new Exception("Еда не помещается в тарелке");
+            throw new IllegalArgumentException("Еда не помещается в тарелке");
         }
         currentVolume += volume;
     }
 
-    public boolean reduceFood(int volume) throws Exception {
+    public boolean reduceFood(int volume) throws IllegalArgumentException {
         if (volume <= 0) {
-            throw new Exception("Количество еды должно быть > 0");
+            throw new IllegalArgumentException("Количество еды должно быть > 0");
         }
         if (currentVolume - volume < 0) {
             System.out.println("В тарелке еды меньше чем количество на которое пытаетесь уменьшить");
@@ -35,10 +35,6 @@ public class Plate {
         }
         currentVolume -= volume;
         return true;
-    }
-
-    public int getCurrentVolume() {
-        return currentVolume;
     }
 
     @Override

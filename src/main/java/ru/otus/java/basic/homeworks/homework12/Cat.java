@@ -10,16 +10,7 @@ public class Cat {
         this.appetite = appetite;
     }
 
-    public void eat(Plate plate) throws Exception {
-// какой из вариантов кормления еды лучше с точки зрения дизайна приложения?
-//      вариант кормления 1
-//        if (plate.getCurrentVolume() >= appetite) {
-//            plate.reduceFood(appetite);
-//            satiety = true;
-//            appetite = 0;
-//        }
-
-//      вариант кормления 2
+    public void eat(Plate plate) throws IllegalArgumentException {
         if (plate.reduceFood(appetite)) {
             satiety = true;
             appetite = 0;
