@@ -12,18 +12,18 @@ public class SearchTreeNode implements SearchTree<Node> {
     private Node firstNode;
     private Node currentRoot;
 
-    public Node getRoot() {
-        return root;
+    public SearchTreeNode() {
     }
 
-    public SearchTreeNode() {
+    public Node getRoot() {
+        return root;
     }
 
     /**
      * создаст сортированное бинарное дерево, запоминает корневой элемент
      *
      * @param amountElements количество элементов
-     * вернет корневой элемент
+     *                       вернет корневой элемент
      */
     void buildBinaryTree(int amountElements) {
         List<Position> pos = of(Position.values());
@@ -31,9 +31,7 @@ public class SearchTreeNode implements SearchTree<Node> {
         int j = 0;
         for (int i = 1; i <= amountElements; i++) {
             j += 1000;
-            Node node = new Node(
-                    new Person("name " + j, pos.get(rand.nextInt(pos.size())), (long) j)
-            );
+            Node node = new Node(new Person("name " + j, pos.get(rand.nextInt(pos.size())), (long) j));
             node.saveReferences(leftNode);
             leftNode = node;
 
@@ -45,26 +43,30 @@ public class SearchTreeNode implements SearchTree<Node> {
 
     @Override
     public Node find(Node element) {
-        if (currentRoot == null) return null;//не нашли и дерево закончилось
+        try {
+            if (currentRoot == null) return null;//не нашли и дерево закончилось
 
-        int resultCompare = element.compareTo(currentRoot);
-        //нашли
-        if (resultCompare == 0) {
-            return currentRoot;
-        }
-        //искомый элемент левее
-        if (resultCompare < 0) {
-            currentRoot = currentRoot.getLeft();
+            int resultCompare = element.compareTo(currentRoot);
+            //нашли
+            if (resultCompare == 0) {
+                return currentRoot;
+            }
+            //искомый элемент левее
+            if (resultCompare < 0) {
+                currentRoot = currentRoot.getLeft();
+                return find(element);
+            }
+            //искомый элемент правее
+            currentRoot = currentRoot.getRight();
             return find(element);
+        } catch (StackOverflowError e) {
+            return null;
         }
-        //искомый элемент правее
-        currentRoot = currentRoot.getRight();
-        return find(element);
     }
 
     @Override
     public List<Node> getSortedList() {
-        ArrayList<Node> result = new ArrayList<>();
+        List<Node> result = new ArrayList<>();
         Node node = firstNode;
         while (node != null) {
             result.add(node);

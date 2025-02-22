@@ -115,7 +115,20 @@ public class AppHw18 {
             Node node = new Node(
                     new Person("name 2000", Position.MANAGER, 2000L)
             );
-            //"результат поиска " +
+            System.out.println("результат поиска: " + searchTreeNode.find(node));
+            System.out.println();
+
+            //здесь произойдет зацикливание, т.к. name 2000 < name 2001 < name 3000,
+            // не нашел ничего лучше чем его отлавливать и отвечать что не найдено
+            node = new Node(
+                    new Person("name 2001", Position.MANAGER, 20001L)
+            );
+            System.out.println("результат поиска: " + searchTreeNode.find(node));
+            System.out.println();
+
+            node = new Node(
+                    new Person("name 200000", Position.MANAGER, 200000L)
+            );
             System.out.println("результат поиска: " + searchTreeNode.find(node));
             System.out.println();
 
