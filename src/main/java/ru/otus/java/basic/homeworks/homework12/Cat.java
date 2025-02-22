@@ -14,7 +14,7 @@ public class Cat {
         if (plate.reduceFood(appetite)) {
             satiety = true;
             appetite = 0;
-            System.out.println("кот "+ name + " наелся");
+            System.out.println("кот " + name + " наелся");
         }
 
     }

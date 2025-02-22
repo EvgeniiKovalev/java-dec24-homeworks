@@ -26,7 +26,7 @@ public class AppHw12 {
 
         Cat[] arrayCat = new Cat[10];
         for (int i = 0; i < arrayCat.length; i++) {
-            arrayCat[i] = new Cat("Cat_"+i,30 + (int)(Math.random()*20));
+            arrayCat[i] = new Cat("Cat_" + i, 30 + (int) (Math.random() * 20));
         }
         System.out.println("сытость котов после рождения котов");
         for (Cat cat : arrayCat) {
