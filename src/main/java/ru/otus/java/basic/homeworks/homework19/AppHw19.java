@@ -1,10 +1,13 @@
 package ru.otus.java.basic.homeworks.homework19;
 
 import java.io.*;
-import java.util.*;
 import java.nio.charset.Charset;
-import java.util.stream.Collectors;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -28,6 +31,7 @@ public class AppHw19 {
     /**
      * выводит файл в консоль
      * буферизация чтения файла в InputStreamReader, чтение из буфера частями равными размеру буфера
+     *
      * @param filename имя файла
      * @param encoding кодировка файла
      */
@@ -52,6 +56,7 @@ public class AppHw19 {
     /**
      * выводит содержимое файла в консоль
      * буферизация чтения файла с диска в BufferedInputStream, чтение всего из буфера, не учитывает кодировку файла
+     *
      * @param filename имя файла
      */
     public static void printFileBufferedInputStream(String filename) {
@@ -75,6 +80,7 @@ public class AppHw19 {
     /**
      * вывод содержимого файла в консоль
      * буферизация чтения файла в BufferedInputStream, чтение всего из буфера, читает файл в указанной кодировке
+     *
      * @param filename имя файла
      * @param encoding кодировка файла
      */
@@ -84,7 +90,7 @@ public class AppHw19 {
         try (FileInputStream fis = new FileInputStream(filename);
              BufferedInputStream bis = new BufferedInputStream(fis, bufSize);
              InputStreamReader isr = new InputStreamReader(bis, encoding)
-             ) {
+        ) {
             int i = 0;
             int charsRead;
             char[] buffer = new char[bufSize];
@@ -101,6 +107,7 @@ public class AppHw19 {
     /**
      * вывод содержимого файла в консоль
      * буферизация на уровне DataInputStream
+     *
      * @param filename имя файла
      */
     public static void printFileDataInputStream(String filename) {
@@ -123,6 +130,7 @@ public class AppHw19 {
     /**
      * вывод содержимого файла в консоль
      * буферизация на уровне ByteArrayInputStream
+     *
      * @param filename имя файла
      */
     public static void printFileByteArrayInputStream(String filename) {
@@ -135,7 +143,7 @@ public class AppHw19 {
             int charsRead;
 
             while (bis.available() > 0) {
-                while ((charsRead = bis.read(buf))!= -1) {
+                while ((charsRead = bis.read(buf)) != -1) {
                     System.out.print(new String(buf, 0, charsRead));
                     i++;
                 }
@@ -149,6 +157,7 @@ public class AppHw19 {
     /**
      * выводит содержимое файла в консоль
      * буферизация на уровне CharArrayReader
+     *
      * @param filename имя файла
      * @param encoding кодировка файла
      */
@@ -304,7 +313,7 @@ public class AppHw19 {
             SaveFileOutputStream(filename, inputString, encoding, true);
         }
         if (list.contains(ThemeForStudy.BUFFEREDINPUTSTREAM)) {
-            SaveFileBufferedOutputStream(filename, inputString, encoding, inputString.length(),true);
+            SaveFileBufferedOutputStream(filename, inputString, encoding, inputString.length(), true);
         }
         if (list.contains(ThemeForStudy.DATAINPUTSTREAM)) {
             saveFileDataOutputStream(filename, inputString, true);
