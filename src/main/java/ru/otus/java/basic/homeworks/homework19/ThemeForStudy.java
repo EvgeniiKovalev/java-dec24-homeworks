@@ -1,0 +1,5 @@
+package ru.otus.java.basic.homeworks.homework19;
+
+public enum ThemeForStudy {
+    FILEINPUTSTREAM, BUFFEREDINPUTSTREAM, DATAINPUTSTREAM, BYTEARRAYINPUTSTREAM, CHARARRAYREADER
+}
