@@ -7,7 +7,7 @@ public interface SearchTree<T> {
      * @param element to find
      * @return element if exists, otherwise - null
      */
-    T find(T element);
+    T find(T root, T element);
 
     List<T> getSortedList();
 }

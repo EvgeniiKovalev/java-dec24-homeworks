@@ -115,7 +115,7 @@ public class AppHw18 {
             Node node = new Node(
                     new Person("name 2000", Position.MANAGER, 2000L)
             );
-            System.out.println("результат поиска: " + searchTreeNode.find(node));
+            System.out.println("результат поиска: " + searchTreeNode.find(searchTreeNode.getRoot(),node));
             System.out.println();
 
             //здесь произойдет зацикливание, т.к. name 2000 < name 2001 < name 3000,
@@ -123,13 +123,15 @@ public class AppHw18 {
             node = new Node(
                     new Person("name 2001", Position.MANAGER, 20001L)
             );
-            System.out.println("результат поиска: " + searchTreeNode.find(node));
+            System.out.println("результат поиска: " + searchTreeNode.find(searchTreeNode.getRoot(), node));
             System.out.println();
 
             node = new Node(
                     new Person("name 200000", Position.MANAGER, 200000L)
             );
-            System.out.println("результат поиска: " + searchTreeNode.find(node));
+            System.out.println("результат поиска: " + searchTreeNode.find(searchTreeNode.getRoot(), node));
+            System.out.println();
+            System.out.println("Корень дерева: " + searchTreeNode.getRoot());
             System.out.println();
 
 

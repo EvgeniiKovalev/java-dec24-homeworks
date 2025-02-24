@@ -10,7 +10,6 @@ public class SearchTreeNode implements SearchTree<Node> {
     private final Random rand = new Random();
     private Node root;
     private Node firstNode;
-    private Node currentRoot;
 
     public SearchTreeNode() {
     }
@@ -38,27 +37,24 @@ public class SearchTreeNode implements SearchTree<Node> {
             if (i == amountElements / 2) root = node;
             if (i == 1) firstNode = node;
         }
-        currentRoot = root;
     }
 
     @Override
-    public Node find(Node element) {
+    public Node find(Node Root, Node element) {
         try {
-            if (currentRoot == null) return null;//не нашли и дерево закончилось
+            if (Root == null) return null;//не нашли и дерево закончилось
 
-            int resultCompare = element.compareTo(currentRoot);
+            int resultCompare = element.compareTo(Root);
             //нашли
             if (resultCompare == 0) {
-                return currentRoot;
+                return Root;
             }
             //искомый элемент левее
             if (resultCompare < 0) {
-                currentRoot = currentRoot.getLeft();
-                return find(element);
+                return find(Root.getLeft(), element);
             }
             //искомый элемент правее
-            currentRoot = currentRoot.getRight();
-            return find(element);
+            return find(Root.getRight(), element);
         } catch (StackOverflowError e) {
             return null;
         }
