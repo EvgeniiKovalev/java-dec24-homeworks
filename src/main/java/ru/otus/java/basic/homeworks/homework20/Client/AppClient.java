@@ -7,6 +7,11 @@ public class AppClient {
         try (Client client = new Client()) {
             StringBuilder inputFromConsole = new StringBuilder();
             Scanner scanner = new Scanner(System.in);
+            System.out.println("------------------------");
+            System.out.println("Input two real numbers (type double) and arithmetic operation, separate them with a space character");
+            System.out.println("type 'shutdown server' to shutdown server exit");
+            System.out.println("type 'stop client' to shutdown client");
+            System.out.println("------------------------");
             while (true) {
                 if (!client.ActiveState()) {
                     if (!client.connect(8080)) {
@@ -14,7 +19,7 @@ public class AppClient {
                     }
                 }
                 inputFromConsole.setLength(0);
-                System.out.println("Input two real numbers (type double) and arithmetic operation, separate them with a " + "space character, type shutdown server to exit:");
+                System.out.print("Your request:");
                 inputFromConsole.append(scanner.nextLine());
                 if (inputFromConsole.toString().equals("stop client")) {
                     break;

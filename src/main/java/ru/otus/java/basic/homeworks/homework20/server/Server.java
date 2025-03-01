@@ -50,7 +50,8 @@ public class Server implements Closeable {
             double operandTwo = Double.parseDouble(items.get(1));
             String operation = items.get(2);
             if (!allowOperations.contains(operation)) {
-                return "Invalid math operation entered, allowed list: \"+ - * /\"";
+                throw new Exception("Invalid math operation entered, allowed list: \"+ - * /\"");
+                //stringBuilder.append("Invalid math operation entered, allowed list: \"+ - * /\"");
             }
             if (operandTwo == 0 && operation.equals("/")) {
                 throw new ArithmeticException("Invalid divide-by-zero operation");
@@ -109,11 +110,16 @@ public class Server implements Closeable {
         System.out.println("Server is trying to start");
         int sizeReadBuffer = 10;
         int sizeWriteBuffer = 10;
-
+        Boolean shutdownServer = false;
         while (true) {
             boundingAndListen(soTimeout, numberConnections);
+            StringBuilder clientInfo = new StringBuilder();
             try {
                 clientSocket = serverSocket.accept();
+                clientInfo.setLength(0);
+                clientInfo.append(String.format("%s:%d",clientSocket.getInetAddress().getHostName(), clientSocket.getLocalPort()));
+                System.out.println("Connected client " + clientInfo);
+
                 outputStream = clientSocket.getOutputStream();
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream), sizeReadBuffer);
                 streamReader = clientSocket.getInputStream();
@@ -122,13 +128,14 @@ public class Server implements Closeable {
                     try {
                         String request = bufferedReader.readLine();
                         if (request == null) {
-                            System.out.println("Lost client connection");
+                            System.out.println("Lost client connection with " + clientInfo);
                             closeClient();
                             break;
                         }
                         System.out.println("Request received '" + request + "'");
                         if (request.equals("shutdown server")) {
                             System.out.println("!!!!!!!!!!!! shutdown server start !!!!!!!!!!!!!!!!!");
+                            shutdownServer = true;
                             break;
                         }
                         String responce = handleMessage(request);
@@ -142,6 +149,9 @@ public class Server implements Closeable {
                         break;
                     }
                 }
+                if (shutdownServer) {
+                    break;
+                }
             } catch (IOException e) {
                 try {
                     closeClient();
@@ -150,8 +160,10 @@ public class Server implements Closeable {
                 }
                 throw new RuntimeException(e);
             } finally {
-                System.out.println("Completed communication with the client");
+                System.out.println("Completed communication with the client " + clientInfo);
             }
+
+
         }
     }
 
