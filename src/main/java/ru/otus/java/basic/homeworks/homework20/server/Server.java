@@ -117,7 +117,7 @@ public class Server implements Closeable {
                 outputStream = clientSocket.getOutputStream();
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream), sizeWriteBuffer);
                 streamReader = clientSocket.getInputStream();
-                bufferedReader = new BufferedReader(new InputStreamReader(streamReader), sizeWriteBuffer);
+                bufferedReader = new BufferedReader(new InputStreamReader(streamReader), sizeReadBuffer);
                 while (true) {
                     try {
                         String request = bufferedReader.readLine();
