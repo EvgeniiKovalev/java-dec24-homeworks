@@ -1,4 +1,4 @@
-package ru.otus.java.basic.homeworks.homework20.Client;
+package ru.otus.java.basic.homeworks.homework20.client;
 
 import java.io.*;
 import java.net.InetAddress;
