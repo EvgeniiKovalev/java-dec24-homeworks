@@ -9,9 +9,13 @@ import java.util.stream.Stream;
 
 public class Server implements Closeable {
     private final List<String> allowOperations = Arrays.asList("+", "-", "*", "/");
-    private ServerSocket serverSocket;
-    private SocketAddress socketAddress;
-
+    private final ServerSocket serverSocket;
+    private final SocketAddress socketAddress;
+    private Socket clientSocket = null;
+    private OutputStream outputStream = null;
+    private BufferedWriter bufferedWriter = null;
+    private InputStream streamReader = null;
+    private BufferedReader bufferedReader = null;
 
     public Server(int port) {
         this(port, "localhost");
@@ -48,7 +52,7 @@ public class Server implements Closeable {
             if (!allowOperations.contains(operation)) {
                 return "Invalid math operation entered, allowed list: \"+ - * /\"";
             }
-            if (operandTwo == 0 && operation.equals("/")){
+            if (operandTwo == 0 && operation.equals("/")) {
                 throw new ArithmeticException("Invalid divide-by-zero operation");
             }
 
@@ -67,7 +71,7 @@ public class Server implements Closeable {
                     res = operandOne / operandTwo;
                     break;
             }
-            stringBuilder.append(res.toString());
+            stringBuilder.append(res);
         } catch (ArithmeticException e) {
             stringBuilder.append(e.getMessage());
         } catch (NumberFormatException e) {
@@ -103,33 +107,47 @@ public class Server implements Closeable {
 
     public void run(int soTimeout, int numberConnections) {
         System.out.println("Server is trying to start");
-        StringBuilder stringBuilder = new StringBuilder();
         int sizeReadBuffer = 10;
         int sizeWriteBuffer = 10;
+
         while (true) {
             boundingAndListen(soTimeout, numberConnections);
-            try (Socket clientSocket = serverSocket.accept();
-                 OutputStream outputStream = clientSocket.getOutputStream();
-                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream), sizeWriteBuffer);
-                 InputStream streamReader = clientSocket.getInputStream();
-                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(streamReader), sizeWriteBuffer)) {
-                try {
-                    stringBuilder.setLength(0);
-                    stringBuilder.append(bufferedReader.readLine());
-                } catch (IOException e) {
-                    System.out.println("Failed to receive message from client");
+            try {
+                clientSocket = serverSocket.accept();
+                outputStream = clientSocket.getOutputStream();
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream), sizeWriteBuffer);
+                streamReader = clientSocket.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(streamReader), sizeWriteBuffer);
+                while (true) {
+                    try {
+                        String request = bufferedReader.readLine();
+                        if (request == null) {
+                            System.out.println("Lost client connection");
+                            closeClient();
+                            break;
+                        }
+                        System.out.println("Request received '" + request + "'");
+                        if (request.equals("shutdown server")) {
+                            System.out.println("!!!!!!!!!!!! shutdown server start !!!!!!!!!!!!!!!!!");
+                            break;
+                        }
+                        String responce = handleMessage(request);
+                        System.out.println("Calculation result " + responce);
+                        bufferedWriter.write(responce);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                    } catch (IOException e) {
+                        System.out.println("Failed to receive message from client");
+                        closeClient();
+                        break;
+                    }
                 }
-                System.out.println("Request received '" + stringBuilder.toString() + "'");
-                if (stringBuilder.toString().equals("shutdown server")) {
-                    System.out.println("!!!!!!!!!!!! shutdown server start !!!!!!!!!!!!!!!!!");
-                    break;
-                }
-                String result = handleMessage(stringBuilder.toString());
-                System.out.println("Calculation result " + result);
-                bufferedWriter.write(result);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
             } catch (IOException e) {
+                try {
+                    closeClient();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 throw new RuntimeException(e);
             } finally {
                 System.out.println("Completed communication with the client");
@@ -137,15 +155,24 @@ public class Server implements Closeable {
         }
     }
 
+    private void closeClient() throws IOException {
+        if (bufferedReader != null) bufferedReader.close();
+        if (streamReader != null) streamReader.close();
+        if (bufferedWriter != null) bufferedWriter.close();
+        if (outputStream != null) outputStream.close();
+        if (clientSocket != null) clientSocket.close();
+    }
+
     @Override
     public void close() throws IOException {
+        closeClient();
+
         serverSocket.close();
         if (serverSocket.isClosed()) {
             System.out.println("Server has shutdown");
         } else {
             System.out.println("Server has not shutdown");
         }
-
     }
 }
 

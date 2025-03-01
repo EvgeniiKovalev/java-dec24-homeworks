@@ -1,6 +1,5 @@
 package ru.otus.java.basic.homeworks.homework20.Client;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class AppClient {
@@ -15,21 +14,20 @@ public class AppClient {
                     }
                 }
                 inputFromConsole.setLength(0);
-                System.out.println("Input two real numbers (type double) and arithmetic operation, separate them with a " +
-                        "space character, type shutdown server to exit:");
+                System.out.println("Input two real numbers (type double) and arithmetic operation, separate them with a " + "space character, type shutdown server to exit:");
                 inputFromConsole.append(scanner.nextLine());
-                client.send(inputFromConsole.toString());
-                if (inputFromConsole.toString().equals("quit")) {
-                    //break;
+                if (inputFromConsole.toString().equals("stop client")) {
+                    break;
                 }
+                client.send(inputFromConsole.toString());
+                if (inputFromConsole.toString().equals("shutdown server")) {
+                    break;
+                }
+
                 inputFromConsole.setLength(0);
-
-                String result = client.receive();
-                System.out.println(result);
-                inputFromConsole.append(result);
+                inputFromConsole.append(client.receive());
+                System.out.println(inputFromConsole);
                 System.out.println("Calculation result: " + inputFromConsole);
-
-                client.close();
             }
         }
     }
