@@ -6,10 +6,16 @@ import java.net.Socket;
 
 public class Client implements Closeable {
     private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private PrintWriter printerWriter;
+    private BufferedReader bufferedReader;
 
-    public boolean ActiveState() {
+    public String getServerInfo() {
+        return serverInfo;
+    }
+
+    private String serverInfo = null;
+
+    public boolean isConnected() {
         try {
             return clientSocket.isConnected() && !clientSocket.isClosed();
         } catch (Exception e) {
@@ -32,9 +38,10 @@ public class Client implements Closeable {
                 throw new IllegalArgumentException("Name is invalid(null)");
             }
             clientSocket = new Socket(InetAddress.getByName(name), port);
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            msg.append(String.format("Connected to server %s:%d\n", InetAddress.getByName(name), port));
+            printerWriter = new PrintWriter(clientSocket.getOutputStream(), false);
+            bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            serverInfo = String.format("%s:%d", InetAddress.getByName(name), port);
+            msg.append(String.format("Connected to server %s. ", serverInfo));
             res = true;
         } catch (IllegalArgumentException | IOException e) {
             msg.append(String.format("Failed connected to server  %s:%d, error='%s'\n", name, port, e.getMessage()));
@@ -43,13 +50,18 @@ public class Client implements Closeable {
         return res;
     }
 
-    public void send(String msg) {
-        out.println(msg);
+    public int send(String msg) {
+        printerWriter.println(msg);
+        printerWriter.flush();
+        if (printerWriter.checkError()) {
+            return -1;
+        }
+        return 0;
     }
 
     public String receive() {
         try {
-            return in.readLine();
+            return bufferedReader.readLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -57,11 +69,11 @@ public class Client implements Closeable {
 
     @Override
     public void close() {
-        if (out != null) out.close();
+        if (printerWriter != null) printerWriter.close();
 
         try {
-            if (in != null) {
-                in.close();
+            if (bufferedReader != null) {
+                bufferedReader.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

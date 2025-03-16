@@ -3,19 +3,16 @@ package ru.otus.java.basic.homeworks.homework20.server;
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static ru.otus.java.basic.homeworks.homework20.server.Common.safetyClose;
 
 public class Server implements Closeable {
     private final List<String> allowOperations = Arrays.asList("+", "-", "*", "/");
     private final ServerSocket serverSocket;
     private final SocketAddress socketAddress;
-    private Socket clientSocket = null;
-    private OutputStream outputStream = null;
-    private BufferedWriter bufferedWriter = null;
-    private InputStream streamReader = null;
-    private BufferedReader bufferedReader = null;
 
     public Server(int port) {
         this(port, "localhost");
@@ -39,7 +36,11 @@ public class Server implements Closeable {
         }
     }
 
-    private String handleMessage(String msg) {
+    private String handleRequest(String msg) {
+        if (msg.equals("SendListMathOperations")) {
+            return "Available mathematical operations: " + allowOperations;
+        }
+
         List<String> items = Stream.of(msg.split(" ")).map(String::trim).collect(Collectors.toList());
         if (msg.isEmpty() || items.size() != 3) {
             return "The string entered does not match the format \"<real number> <real number> <math operation>\"";
@@ -51,7 +52,6 @@ public class Server implements Closeable {
             String operation = items.get(2);
             if (!allowOperations.contains(operation)) {
                 throw new Exception("Invalid math operation entered, allowed list: \"+ - * /\"");
-                //stringBuilder.append("Invalid math operation entered, allowed list: \"+ - * /\"");
             }
             if (operandTwo == 0 && operation.equals("/")) {
                 throw new ArithmeticException("Invalid divide-by-zero operation");
@@ -106,85 +106,87 @@ public class Server implements Closeable {
         }
     }
 
+    private HashMap<NameFieldResult, Object> handleClientConnection(ClientConnection clientConnection, int sizeBuffer) throws IOException {
+        Socket clientSocket = clientConnection.getClientSocket();
+
+        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()), sizeBuffer);
+        clientConnection.setBufferedWriter(bufferedWriter);
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()), sizeBuffer);
+        clientConnection.setBufferedReader(bufferedReader);
+
+        HashMap<NameFieldResult, Object> result = new HashMap<>();
+        while (true) {
+            try {
+                String request = bufferedReader.readLine();
+                if (request == null) {
+                    result.put(NameFieldResult.MESSAGE, "Lost client connection with " + clientConnection.getConnectionInfo());
+                    result.put(NameFieldResult.EXCLUSIVE_ACTION_SERVER, ExclusiveActionServer.CLOSE_CLIENT);
+                    break;
+                }
+                System.out.println("Request received '" + request + "'");
+                if (request.equals("shutdown server")) {
+                    result.put(NameFieldResult.MESSAGE, "!!!!!!!!!!!! shutdown server start !!!!!!!!!!!!!!!!!");
+                    result.put(NameFieldResult.EXCLUSIVE_ACTION_SERVER, ExclusiveActionServer.SHUTDOWN_SERVER);
+                    clientSocket.shutdownInput();
+                    break;
+                }
+                String responce = handleRequest(request);
+                System.out.println("Calculation result " + responce);
+                bufferedWriter.write(responce);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException e) {
+                result.put(NameFieldResult.MESSAGE, "Failed to receive message from client");
+                result.put(NameFieldResult.EXCLUSIVE_ACTION_SERVER, ExclusiveActionServer.CLOSE_CLIENT);
+                break;
+            }
+        }
+        return result;
+    }
+
     public void run(int soTimeout, int numberConnections) {
         System.out.println("Server is trying to start");
-        int sizeReadBuffer = 10;
-        int sizeWriteBuffer = 10;
-        Boolean shutdownServer = false;
+        int sizeBuffer = 10;
+
         while (true) {
             boundingAndListen(soTimeout, numberConnections);
-            StringBuilder clientInfo = new StringBuilder();
+            ClientConnection clientConnection = new ClientConnection();
             try {
-                clientSocket = serverSocket.accept();
-                clientInfo.setLength(0);
-                clientInfo.append(String.format("%s:%d",clientSocket.getInetAddress().getHostName(), clientSocket.getLocalPort()));
-                System.out.println("Connected client " + clientInfo);
+                ExclusiveActionServer exclusiveAction = null;
+                clientConnection.setClientSocket(serverSocket.accept());
+                System.out.println("Connected client " + clientConnection);
+                HashMap<NameFieldResult, Object> resultHandleClientConnection = handleClientConnection(clientConnection, sizeBuffer);
 
-                outputStream = clientSocket.getOutputStream();
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream), sizeReadBuffer);
-                streamReader = clientSocket.getInputStream();
-                bufferedReader = new BufferedReader(new InputStreamReader(streamReader), sizeReadBuffer);
-                while (true) {
-                    try {
-                        String request = bufferedReader.readLine();
-                        if (request == null) {
-                            System.out.println("Lost client connection with " + clientInfo);
-                            closeClient();
-                            break;
-                        }
-                        System.out.println("Request received '" + request + "'");
-                        if (request.equals("shutdown server")) {
-                            System.out.println("!!!!!!!!!!!! shutdown server start !!!!!!!!!!!!!!!!!");
-                            shutdownServer = true;
-                            break;
-                        }
-                        String responce = handleMessage(request);
-                        System.out.println("Calculation result " + responce);
-                        bufferedWriter.write(responce);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
-                    } catch (IOException e) {
-                        System.out.println("Failed to receive message from client");
-                        closeClient();
+                String message = (String) resultHandleClientConnection.get(NameFieldResult.MESSAGE);
+                if (!message.isEmpty()) {
+                    System.out.println(message);
+                }
+                exclusiveAction = (ExclusiveActionServer) resultHandleClientConnection.get(NameFieldResult.EXCLUSIVE_ACTION_SERVER);
+                if (exclusiveAction == ExclusiveActionServer.CLOSE_CLIENT || exclusiveAction == ExclusiveActionServer.SHUTDOWN_SERVER) {
+                    safetyClose(clientConnection);
+                    if (exclusiveAction == ExclusiveActionServer.SHUTDOWN_SERVER) {
                         break;
                     }
                 }
-                if (shutdownServer) {
-                    break;
-                }
-            } catch (IOException e) {
+            } catch (IOException ex) {
                 try {
-                    closeClient();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                    safetyClose(clientConnection);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                throw new RuntimeException(e);
             } finally {
-                System.out.println("Completed communication with the client " + clientInfo);
+                System.out.println("Completed communication with the client " + clientConnection.getConnectionInfo());
             }
-
-
         }
     }
 
-    private void closeClient() throws IOException {
-        if (bufferedReader != null) bufferedReader.close();
-        if (streamReader != null) streamReader.close();
-        if (bufferedWriter != null) bufferedWriter.close();
-        if (outputStream != null) outputStream.close();
-        if (clientSocket != null) clientSocket.close();
-    }
+
 
     @Override
     public void close() throws IOException {
-        closeClient();
-
-        serverSocket.close();
-        if (serverSocket.isClosed()) {
-            System.out.println("Server has shutdown");
-        } else {
-            System.out.println("Server has not shutdown");
-        }
+        safetyClose(serverSocket);
+        System.out.println("Server has shutdown");
     }
 }
 

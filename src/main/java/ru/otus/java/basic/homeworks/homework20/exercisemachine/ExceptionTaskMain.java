@@ -1,5 +1,3 @@
-package ru.otus.java.basic.homeworks.homework20.exercisemachine;
-
 public class ExceptionTaskMain {
 
     public static void main(String[] args) {
@@ -30,8 +28,8 @@ class ExceptionTask {
     public static <T extends Throwable> boolean invokesException(Class<T> clazz, Callable callable) {
         try {
             callable.call();
-        } catch (Exception e) {
-            return e.getClass() == clazz;
+        } catch (Throwable e) {
+            return e.getClass().getSimpleName().equals(clazz.getSimpleName());
         }
         return false;
     }

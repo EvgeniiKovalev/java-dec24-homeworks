@@ -14,8 +14,13 @@ public class ExceptionTaskBuggyMethod {
         int result = 0;
         for (var item: inputNumbers) {
             try {
-                result += (item + 1) / item;
-            } catch (ArithmeticException ignored) {
+                if (item >= Integer.MAX_VALUE) {
+                    //throw new ArithmeticException();
+                    result += 0;
+                }
+                result += (item  + 1) / item;
+            } catch (ArithmeticException e) {
+                result += 0;
             }
         }
         return result;

@@ -5,34 +5,55 @@ import java.util.Scanner;
 public class AppClient {
     public static void main(String[] args) {
         try (Client client = new Client()) {
-            StringBuilder inputFromConsole = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder();
             Scanner scanner = new Scanner(System.in);
             System.out.println("------------------------");
             System.out.println("Input two real numbers (type double) and arithmetic operation, separate them with a space character");
             System.out.println("type 'shutdown server' to shutdown server exit");
             System.out.println("type 'stop client' to shutdown client");
             System.out.println("------------------------");
+
+            boolean receivedMathOperations = false;
             while (true) {
-                if (!client.ActiveState()) {
+                if (!client.isConnected()) {
                     if (!client.connect(8080)) {
                         break;
                     }
                 }
-                inputFromConsole.setLength(0);
-                System.out.print("Your request:");
-                inputFromConsole.append(scanner.nextLine());
-                if (inputFromConsole.toString().equals("stop client")) {
-                    break;
+                stringBuilder.setLength(0);
+                if (receivedMathOperations) {
+                    System.out.print("Your request:");
+                    stringBuilder.append(scanner.nextLine());
+                } else {
+                    stringBuilder.append("SendListMathOperations");
                 }
-                client.send(inputFromConsole.toString());
-                if (inputFromConsole.toString().equals("shutdown server")) {
+
+                if (stringBuilder.toString().equals("stop client")) {
                     break;
                 }
 
-                inputFromConsole.setLength(0);
-                inputFromConsole.append(client.receive());
-                System.out.println(inputFromConsole);
-                System.out.println("Calculation result: " + inputFromConsole);
+                if (client.send(stringBuilder.toString()) == -1) {
+                    System.out.println("Произошла ошибка записи в сокет");
+                    break;
+                }
+
+                if (stringBuilder.toString().equals("shutdown server")) {
+                    break;
+                }
+
+                stringBuilder.setLength(0);
+                stringBuilder.append(client.receive());
+
+                if (receivedMathOperations) {
+                    System.out.println("Calculation result: " + stringBuilder);
+                }
+                else {
+                    System.out.println(stringBuilder);
+                    receivedMathOperations = true;
+                }
+            }
+            if (client.getServerInfo() != null && !client.getServerInfo().isEmpty()) {
+                System.out.printf("Клиент завершает работу c сервером %s,", client.getServerInfo());
             }
         }
     }
