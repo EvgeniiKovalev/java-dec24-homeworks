@@ -4,12 +4,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClientHandler {
     private Server server;
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private final List<String> listAllowedCommandsBeforeAuth = List.of("/exit", "/auth", "/reg");
+    private final List<String> listAllowedCommandsAfterAuth = List.of("/exit", "/w");
 
     private String username;
 
@@ -21,6 +25,81 @@ public class ClientHandler {
         this.username = username;
     }
 
+    public boolean closeHandleMessageAuth(int lenParts, String login, String password) {
+        if (lenParts != 3) {
+            sendMessage("Неверный формат команды /auth ");
+            return false;
+        }
+        return server.getAuthenticatedProvider().authenticate(this, login, password);
+    }
+
+    public boolean closeHandleMessageReg(int lenParts, String login, String password, String username) {
+        if (lenParts != 4) {
+            sendMessage("Неверный формат команды /reg ");
+            return false;
+        }
+        return server.getAuthenticatedProvider().registration(this,  login, password, username);
+    }
+
+    /**
+     * @return true - success authentication with client, else - false
+     */
+    public boolean authentificateClient() throws IOException {
+        while (true) {
+            String message = in.readUTF();
+            if (message.isEmpty()) {continue;}
+            String[] parts = message.split(" ");
+            String command = parts[0];
+            if (!listAllowedCommandsBeforeAuth.contains(command)) {
+                sendMessage("Перед работой необходимо пройти аутентификацию командой " +
+                        "/auth login password или регистрацию командой /reg login password username");
+                continue;
+            }
+            boolean authSuccess = false;
+            switch (command) {
+                case "/exit":
+                    sendMessage("/exitok");
+                    return false;
+                // /auth login password
+                case "/auth":
+                    authSuccess = closeHandleMessageAuth(parts.length, parts[1], parts[2]);
+                    break;
+                // /reg login password username
+                case "/reg":
+                    authSuccess = closeHandleMessageReg(parts.length, parts[1], parts[2], parts[3]);
+                    break;
+            }
+            if (authSuccess) {
+                return true;
+            }
+        }
+    }
+
+    public void handleCommandsClient() throws IOException {
+        while (true) {
+            String message = in.readUTF();
+            if (message.isEmpty()) {continue;}
+
+            String[] parts = message.split(" ");
+            String command = parts[0];
+            if (!listAllowedCommandsAfterAuth.contains(command) && command.charAt(0) == '/') {
+                sendMessage("Неподдерживаемая команда");
+                continue;
+            }
+            switch (command) {
+                case "/exit":
+                    sendMessage("/exitok");
+                    return;
+                // /w username your long message
+                case "/w":
+                    server.sendMessageToUsername(this, parts);
+                    break;
+                default:
+                    server.broadcastMessage(username + " : " + message);
+            }
+        }
+    }
+
     public ClientHandler(Server server, Socket socket) throws IOException {
         this.server = server;
         this.socket = socket;
@@ -29,57 +108,8 @@ public class ClientHandler {
         new Thread(() -> {
             try {
                 System.out.println("Клиент подключился ");
-                //цикл аутентификации
-                while (true) {
-                    String message = in.readUTF();
-                    if (message.startsWith("/")) {
-                        if (message.startsWith("/exit")) {
-                            sendMessage("/exitok");
-                            break;
-                        }
-                        // /auth login password
-                        if (message.startsWith("/auth ")) {
-                            String[] elements = message.split(" ");
-                            if (elements.length != 3) {
-                                sendMessage("Неверный формат команды /auth ");
-                                continue;
-                            }
-                            if (server.getAuthenticatedProvider()
-                                    .authenticate(this,elements[1], elements[2])){
-                                break;
-                            }
-                            continue;
-                        }
-                        // /reg login password username
-                        if (message.startsWith("/reg ")) {
-                            String[] elements = message.split(" ");
-                            if (elements.length != 4) {
-                                sendMessage("Неверный формат команды /reg ");
-                                continue;
-                            }
-                            if (server.getAuthenticatedProvider()
-                                    .registration(this,elements[1], elements[2], elements[3])){
-                                break;
-                            }
-                            continue;
-                        }
-                    }
-                    sendMessage("Перед работой необходимо пройти аутентификацию командой " +
-                            "/auth login password или регистрацию командой /reg login password username");
-                }
-                System.out.println("Клиент "+ username+ " успешно прошел аутентификацию");
-                //цпкл работы
-                while (true) {
-                    String message = in.readUTF();
-                    if (message.startsWith("/")) {
-                        if (message.startsWith("/exit")) {
-                            sendMessage("/exitok");
-                            break;
-                        }
-
-                    } else {
-                        server.broadcastMessage(username + " : " + message);
-                    }
+                if (authentificateClient()) {
+                    handleCommandsClient();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -116,3 +146,4 @@ public class ClientHandler {
         }
     }
 }
+

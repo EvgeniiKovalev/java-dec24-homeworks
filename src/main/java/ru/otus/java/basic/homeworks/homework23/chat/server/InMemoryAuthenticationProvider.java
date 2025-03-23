@@ -23,7 +23,7 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvider {
         this.server = server;
         this.users = new ArrayList<>();
         this.users.add(new User("login1", "password1", "username1"));
-        this.users.add(new User("qwe", "qwe", "qwe1"));
+        this.users.add(new User("qwe", "1234567", "qwe1"));
         this.users.add(new User("asd", "asd", "asd1"));
         this.users.add(new User("zxc", "zxc", "zxc1"));
     }
