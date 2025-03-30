@@ -1,4 +1,4 @@
-package ru.otus.java.basic.homeworks.homework23.chat.client;
+package ru.otus.java.basic.homeworks.homework24.chat.client;
 
 import java.io.IOException;
 

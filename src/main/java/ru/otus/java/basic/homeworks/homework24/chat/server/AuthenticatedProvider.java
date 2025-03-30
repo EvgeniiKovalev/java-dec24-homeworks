@@ -1,4 +1,4 @@
-package ru.otus.java.basic.homeworks.homework23.chat.server;
+package ru.otus.java.basic.homeworks.homework24.chat.server;
 
 public interface AuthenticatedProvider {
     void initialize();
