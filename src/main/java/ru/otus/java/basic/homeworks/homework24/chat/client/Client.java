@@ -1,84 +1,102 @@
 package ru.otus.java.basic.homeworks.homework24.chat.client;
 
-import java.io.Closeable;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
-    Socket socket;
-    DataInputStream in;
-    DataOutputStream out;
-    private volatile boolean needDisconnect = false;
-    String username;
+public class Client implements Closeable, Runnable {
+    private final Socket socket;
+    private final DataInputStream in;
+    private final DataOutputStream out;
+    private volatile boolean needClose = false; // может измениться в разных потоках методами одного и того же экземпляра этого класса
+    private String username;
 
     public Client() throws IOException {
-        Scanner scanner = new Scanner(System.in);
         socket = new Socket("localhost", 8189);
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
+        needClose = false;
+    }
 
-        new Thread(() -> {
-            try {
-                handleAnswerServer();
-
-            } catch (IOException e) {
-                needDisconnect = true;
-                e.printStackTrace();
-            } finally {
+    @Override
+    public void run() {
+        try {
+            StringBuilder message = new StringBuilder();
+            while (!needClose) {
+                System.out.println("run()");
+                String[] parts;
+                message.setLength(0);
                 try {
-                    if (needDisconnect) {
-                        disconnect();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    message.append(in.readUTF());
+                } catch (EOFException e) {
+                    break;
+                }
+                parts = message.toString().split(" ");
+                String command = parts[0];
+                switch (command) {
+                    case "/exitok":
+                        needClose = true;
+                        break;
+                    case "/kickok":
+                        needClose = true;
+                        System.out.println(message);
+                        break;
+                    case "/authok":
+                        username = parts[1];
+                        System.out.println("Аутентификация прошла успешно с именем пользователя: " + username);
+                        break;
+                    case "/regok":
+                        username = parts[1];
+                        System.out.println("Регистрация прошла успешно с именем пользователя: " + username);
+                        break;
+                    default:
+                        System.out.println(message);
+                        break;
+                }
+
+                if (needClose) {
+                    break;
                 }
             }
-        }).start();
-
-        handleInputUser(scanner);
-    }
-
-    private void handleInputUser(Scanner scanner) throws IOException {
-        while (!needDisconnect) {
-            String message = scanner.nextLine();
-            out.writeUTF(message);
-        }
-    }
-
-    private void handleAnswerServer() throws IOException {
-        while (!needDisconnect) {
-            System.out.println("handleAnswerServer()");
-            String message = in.readUTF();
-            String[] parts = message.split(" ");
-            String command = parts[0];
-            switch (command) {
-                case "/exitok":
-                    needDisconnect = true;
-                    break;
-                case "/authok":
-                    username = parts[1];
-                    System.out.println("Аутентификация прошла успешно с именем пользователя: " + username);
-                    break;
-                case "/regok":
-                    username = parts[1];
-                    System.out.println("Регистрация прошла успешно с именем пользователя: " + username);
-                    break;
-                case "/kickok":
-                    needDisconnect = true;
-                    break;
-                default:
-                    System.out.println(message);
-                    break;
+        } catch (IOException e) {
+            needClose = true;
+            e.printStackTrace();
+        } finally {
+            try {
+                if (needClose) {
+                    close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            if (needDisconnect) {break;}
         }
     }
 
-    public void safetyClose(Closeable closeObject) throws IOException{
+    void handleInputUser() throws IOException, InterruptedException {
+        Scanner scanner = new Scanner(System.in);
+        while (!needClose) {
+            int countTryes = 1;
+            String message = scanner.nextLine();
+            if (needClose) {break;}
+            while (true) {
+                if (needClose) {break;}
+                try {
+                    System.out.println("needClose = " + needClose);
+                    out.writeUTF(message);
+                    break;
+                } catch (IOException e) {
+                    Thread.sleep(1000);
+                    if (countTryes == 3) {
+                        throw new IOException("Не удалось отправить сообщение серверу за три попытки");
+                    }
+                    countTryes++;
+                }
+            }
+            System.out.println("цикл завершен, needClose = " + needClose);
+        }
+    }
+
+    public void safetyClose(Closeable closeObject) throws IOException {
         if (closeObject != null) {
             try {
                 closeObject.close();
@@ -88,7 +106,8 @@ public class Client {
         }
     }
 
-    public void disconnect() throws IOException {
+    @Override
+    public void close() throws IOException {
         System.out.printf("Отключение пользователя \"%s\"", username);
         safetyClose(in);
         safetyClose(out);

@@ -39,7 +39,7 @@ public class ClientHandler implements Closeable {
             try {
                 System.out.println("Клиент подключился");
                 if (authentificateClient()) {
-                    System.out.println("в чат вошел " + username);
+                    System.out.println("подключился " + username);
                     setDefaultRoles();
                     handleCommandsClient();
                 }
@@ -58,14 +58,6 @@ public class ClientHandler implements Closeable {
 
     public boolean checkRole(Role role) {
         return roles.contains(role);
-    }
-
-    public void addRole(Role role) {
-        roles.add(role);
-    }
-
-    public void delRole(Role role) {
-        roles.remove(role);
     }
 
     public String getUsername() {
@@ -139,7 +131,8 @@ public class ClientHandler implements Closeable {
                         continue;
                     }
                     server.kickUsername(this, parts);
-                    return; //username больше не обслуживается
+                    break;
+                    //return; //username больше не обслуживается
                 case "/clients":
                     server.printClients(this);
                     break;

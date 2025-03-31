@@ -61,7 +61,7 @@ public class Server implements Closeable {
                             new String[]{
                                     "/w",
                                     authorKick,
-                                    String.format("В списке пользователй чата не найден пользователь \"%s\"", kickUsername)
+                                    "cреди подключенных пользователей не найден с username = \"" + kickUsername + "\""
                             }
                     );
                     return;
@@ -69,12 +69,11 @@ public class Server implements Closeable {
                 sendMessageToUsername(
                         authorCommand,
                         new String[]{
-                                "/w",
+                                "/kickok",
                                 kickUsername,
-                                "kickok"
+                                "вы отключены от чата"
                         }
                 );
-                System.out.println(String.format("%s:/kick %s", authorKick, kickUsername));
                 kickClient.close();
             }
         } catch (Exception e) {
@@ -85,27 +84,37 @@ public class Server implements Closeable {
     void sendMessageToUsername(ClientHandler clientFrom, String[] parts){
         String username = parts[1];
         ClientHandler recepientClient = clientByUsername(username);
+        StringBuilder message = new StringBuilder();
         if (recepientClient == null) {
-            System.out.println("Не найден username \"" + username + "\" среди подключенных пользователей");
-            return;
+            //отправка автору сообщения, что не найден пользователь которому предназначалось сообщение
+            recepientClient = clientFrom;
+            message.append("cреди подключенных пользователей не найден с username = \"" + username + "\"");
+            System.out.println(message.toString());
         }
-        StringBuilder messageBuilder = new StringBuilder(clientFrom.getUsername()).append(" :");
-        for (int i = 2; i < parts.length; i++) {
-            messageBuilder.append(" ").append(parts[i]);
+        if (message.length() == 0) {
+            message.append(clientFrom.getUsername()).append(" :");
+            for (int i = 2; i < parts.length; i++) {
+                message.append(" ").append(parts[i]);
+            }
         }
-        System.out.println("sendMessageToUsername: "  + messageBuilder.toString());
-        recepientClient.sendMessage(messageBuilder.toString());
+        recepientClient.sendMessage(message.toString());
     }
 
     void printClients(ClientHandler authorCommand){
         if (authorCommand.checkRole(Role.ADMIN)) {
-            System.out.println("Подключенные клиенты:");
             String username = authorCommand.getUsername();
-            sendMessageToUsername(authorCommand, new String[]{"/w", username, "Подключенные клиенты:"});
+            StringBuilder message = new StringBuilder("Подключенные клиенты:");
             for (ClientHandler client : clients) {
-                System.out.println(client.getUsername());
-                sendMessageToUsername(authorCommand, new String[]{"/w", username, client.getUsername()});
+                message.append("\r\n").append(client.getUsername());
             }
+            sendMessageToUsername(authorCommand, new String[]{"/w", username, message.toString()});
+            System.out.println(message.toString());
+
+//            sendMessageToUsername(authorCommand, new String[]{"/w", username, "Подключенные клиенты:"});
+//            for (ClientHandler client : clients) {
+//                System.out.println(client.getUsername());
+//                sendMessageToUsername(authorCommand, new String[]{"/w", username, client.getUsername()});
+//            }
         }
     }
 
