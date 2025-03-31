@@ -109,12 +109,6 @@ public class Server implements Closeable {
             }
             sendMessageToUsername(authorCommand, new String[]{"/w", username, message.toString()});
             System.out.println(message.toString());
-
-//            sendMessageToUsername(authorCommand, new String[]{"/w", username, "Подключенные клиенты:"});
-//            for (ClientHandler client : clients) {
-//                System.out.println(client.getUsername());
-//                sendMessageToUsername(authorCommand, new String[]{"/w", username, client.getUsername()});
-//            }
         }
     }
 
