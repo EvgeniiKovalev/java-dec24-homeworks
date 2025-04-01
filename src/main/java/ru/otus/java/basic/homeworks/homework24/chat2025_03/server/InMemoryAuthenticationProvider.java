@@ -1,5 +1,3 @@
-package ru.otus.java.basic.homeworks.homework24.chat.server;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

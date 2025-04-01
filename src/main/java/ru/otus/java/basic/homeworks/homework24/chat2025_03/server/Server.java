@@ -1,5 +1,3 @@
-package ru.otus.java.basic.homeworks.homework24.chat.server;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -80,8 +78,9 @@ public class Server implements Closeable {
                 );
                 kickClient.close();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Ошибка при отключении клиента: " + e.getMessage());
+            return false;
         }
         return true;
     }
@@ -138,7 +137,7 @@ public class Server implements Closeable {
     }
 
     public boolean isUsernameBusy(String username) {
-        return clientByUsername(username) != null ? true : false;
+        return clientByUsername(username) != null;
     }
 
     @Override

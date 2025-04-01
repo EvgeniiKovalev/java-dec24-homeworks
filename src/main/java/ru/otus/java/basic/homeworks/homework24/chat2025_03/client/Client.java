@@ -1,5 +1,3 @@
-package ru.otus.java.basic.homeworks.homework24.chat.client;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;

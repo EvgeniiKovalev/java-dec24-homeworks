@@ -1,5 +1,3 @@
-package ru.otus.java.basic.homeworks.homework24.chat.server;
-
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

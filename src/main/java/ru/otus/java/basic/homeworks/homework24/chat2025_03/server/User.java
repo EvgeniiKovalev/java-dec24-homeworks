@@ -1,5 +1,4 @@
-package ru.otus.java.basic.homeworks.homework24.chat.server;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -13,7 +12,7 @@ public class User {
         this.login = login;
         this.password = password;
         this.username = username;
-        roles = new CopyOnWriteArrayList<>();
+        roles = new ArrayList<>(); //потокобезопасность не нужна
 
     }
 
