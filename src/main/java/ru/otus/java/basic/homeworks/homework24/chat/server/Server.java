@@ -49,9 +49,13 @@ public class Server implements Closeable {
         }
     }
 
-    void kickUsername(ClientHandler authorCommand, String[] parts) throws IOException {
+    boolean kickUsername(ClientHandler authorCommand, String[] parts) throws IOException {
+        if (parts.length != 2) {
+            return false;
+        }
+
         try {
-            if (authorCommand.checkRole(Role.ADMIN)) {
+            if (authorCommand.getUser().checkRole(Role.ADMIN)) {
                 String kickUsername = parts[1];
                 String authorKick = authorCommand.getUsername();
                 ClientHandler kickClient = clientByUsername(kickUsername);
@@ -64,7 +68,7 @@ public class Server implements Closeable {
                                     "cреди подключенных пользователей не найден с username = \"" + kickUsername + "\""
                             }
                     );
-                    return;
+                    return true;
                 }
                 sendMessageToUsername(
                         authorCommand,
@@ -79,9 +83,20 @@ public class Server implements Closeable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return true;
     }
 
-    void sendMessageToUsername(ClientHandler clientFrom, String[] parts){
+    /**
+     *
+     * @param clientFrom
+     * @param parts
+     * @return false if command is not valid and not sended message, true - if sended message
+     */
+    boolean sendMessageToUsername(ClientHandler clientFrom, String[] parts){
+        if (parts.length < 3) {
+            return false;
+        }
+
         String username = parts[1];
         ClientHandler recepientClient = clientByUsername(username);
         StringBuilder message = new StringBuilder();
@@ -98,10 +113,11 @@ public class Server implements Closeable {
             }
         }
         recepientClient.sendMessage(message.toString());
+        return true;
     }
 
     void printClients(ClientHandler authorCommand){
-        if (authorCommand.checkRole(Role.ADMIN)) {
+        if (authorCommand.getUser().checkRole(Role.ADMIN)) {
             String username = authorCommand.getUsername();
             StringBuilder message = new StringBuilder("Подключенные клиенты:");
             for (ClientHandler client : clients) {

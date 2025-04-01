@@ -10,7 +10,7 @@ public class Client implements Closeable, Runnable {
     private final Socket socket;
     private final DataInputStream in;
     private final DataOutputStream out;
-    private CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch latch = new CountDownLatch(1);
     private String username;
 
     public Client() throws IOException {
@@ -29,6 +29,7 @@ public class Client implements Closeable, Runnable {
                 try {
                     message.append(in.readUTF());
                 } catch (EOFException e) {
+                    System.out.println("latch.getCount() = " + latch.getCount());
                     break;
                 }
                 parts = message.toString().split(" ");
@@ -54,6 +55,7 @@ public class Client implements Closeable, Runnable {
                         break;
                 }
                 if (latch.await(100, TimeUnit.MILLISECONDS)) {
+                    System.out.println("Команда с закрытием клиента");
                     break;
                 }
             }
@@ -74,7 +76,10 @@ public class Client implements Closeable, Runnable {
         while (!latch.await(100, TimeUnit.MILLISECONDS)) {
             int countTryes = 1;
             String message = scanner.nextLine();
-            if (latch.await(100, TimeUnit.MILLISECONDS)) {break;}
+            if (latch.await(100, TimeUnit.MILLISECONDS)) {
+                System.out.println("Пришла команда закрыть клинта, закрываем ввод");
+                break;
+            }
             while (true) {
                 try {
                     out.writeUTF(message);

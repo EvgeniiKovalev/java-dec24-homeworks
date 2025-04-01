@@ -6,7 +6,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientHandler implements Closeable {
     private static final List<String> allowedCommandsBeforeAuth = List.of("/exit", "/auth", "/reg");
@@ -15,18 +14,12 @@ public class ClientHandler implements Closeable {
     private final Socket client;
     private final DataInputStream in;
     private final DataOutputStream out;
+    private User user;
     private String username;
-    private final List<Role> roles = new CopyOnWriteArrayList<>();
 
     @Override
     public String toString() {
         return username;
-    }
-
-    private void setDefaultRoles(){
-        if (username.equalsIgnoreCase("admin") || username.equalsIgnoreCase("root")) {
-            roles.add(Role.ADMIN);
-        }
     }
 
     public ClientHandler(Server server, Socket client) throws IOException {
@@ -35,12 +28,10 @@ public class ClientHandler implements Closeable {
         this.in = new DataInputStream(client.getInputStream());
         this.out = new DataOutputStream(client.getOutputStream());
         new Thread(() -> {
-            //StringBuilder username = new StringBuilder();
             try {
                 System.out.println("Клиент подключился");
-                if (authentificateClient()) {
+                if (authenticateClient()) {
                     System.out.println("подключился " + username);
-                    setDefaultRoles();
                     handleCommandsClient();
                 }
             } catch (IOException e) {
@@ -56,23 +47,26 @@ public class ClientHandler implements Closeable {
         }).start();
     }
 
-    public boolean checkRole(Role role) {
-        return roles.contains(role);
+    public User getUser() {
+        return user;
     }
 
     public String getUsername() {
         return username;
     }
 
+
     public void setUsername(String username) {
         this.username = username;
     }
-
+    public void setUser(User user) {
+        this.user = user;
+    }
     /**
      * @return true - success authentication with client, else - false
      */
-    public boolean authentificateClient() throws IOException {
-        System.out.println("authentificateClient()");
+    public boolean authenticateClient() throws IOException {
+        System.out.println("authenticateClient()");
         while (true) {
             String message = in.readUTF();
             if (message.isEmpty()) {continue;}
@@ -89,17 +83,23 @@ public class ClientHandler implements Closeable {
                     sendMessage("/exitok");
                     return false;
                 case "/auth":
-                    if (lenParts < 3) {
+                    if (lenParts != 3) {
                         sendMessage("Не указаны параметры команды: /auth login password");
                         continue;
                     }
-                    return server.getAuthenticatedProvider().authenticate(this, parts[1], parts[2]);
+                    if (!server.getAuthenticatedProvider().authenticate(this, parts[1], parts[2])) {
+                        continue;
+                    }
+                    return true;
                 case "/reg":
-                    if (lenParts < 4) {
+                    if (lenParts != 4) {
                         sendMessage("Не указаны параметры команды: /reg login password username");
                         continue;
                     }
-                    return server.getAuthenticatedProvider().registration(this, parts[1], parts[2], parts[3]);
+                    if (!server.getAuthenticatedProvider().registration(this, parts[1], parts[2], parts[3])) {
+                        continue;
+                    }
+                    return true;
             }
         }
     }
@@ -116,23 +116,19 @@ public class ClientHandler implements Closeable {
                 sendMessage("Неподдерживаемая команда");
                 continue;
             }
-            int lenParts = parts.length;
             switch (command) {
                 case "/w":
-                    if (lenParts < 3) {
+                    if (!server.sendMessageToUsername(this, parts)){
                         sendMessage("Не указаны параметры команды: /w username message");
                         continue;
                     }
-                    server.sendMessageToUsername(this, parts);
                     break;
                 case "/kick":
-                    if (lenParts < 2) {
+                    if (!server.kickUsername(this, parts)){
                         sendMessage("Не указаны параметры команды: /kick username");
                         continue;
                     }
-                    server.kickUsername(this, parts);
                     break;
-                    //return; //username больше не обслуживается
                 case "/clients":
                     server.printClients(this);
                     break;
