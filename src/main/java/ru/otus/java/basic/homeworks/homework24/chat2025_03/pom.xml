@@ -4,14 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.otus.java.basic</groupId>
-    <artifactId>java-dec24-homeworks</artifactId>
+    <groupId>ru.otus.java.basic.java-dec24-homeworks</groupId>
+    <artifactId>chat2025_03</artifactId>
     <version>1.0-SNAPSHOT</version>
-<!--
+    <packaging>pom</packaging>
+
     <modules>
-        <module>src/main/java/ru/otus/java/basic/homeworks/homework24/chat2025_03</module>
+        <module>server</module>
+        <module>client</module>
     </modules>
--->
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
