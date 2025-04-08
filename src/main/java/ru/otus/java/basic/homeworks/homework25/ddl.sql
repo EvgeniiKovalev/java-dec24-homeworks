@@ -68,6 +68,10 @@ comment on column db_tests.answers.answer_right is 'true если правиль
 --индекс на FK
 CREATE INDEX if not exists idx_fk_answers_question_id ON db_tests.answers(question_id);
 
+--индекс гарантирующий 1 правильный ответ на вопрос, исп-мый для поиска правильных ответов по номеру вопроса
+CREATE UNIQUE index if not exists  idx_one_correct_answer ON db_tests.answers (question_id) WHERE (answer_right = true);
+
+
 --------------
 --2. триггеры
 --------------
@@ -206,9 +210,16 @@ delete from db_tests.answers where question_id = 1 and answer_id = 1; --error
 
 -- проверка триггера insert
 INSERT INTO db_tests.answers(answer_id, question_id, answer_text, answer_right) values(8, 2, 'answer_2_6', null); --error
-INSERT INTO db_tests.answers(answer_id, question_id, answer_text, answer_right) values(8, 1, 'answer_1_3', null); --no error
+INSERT INTO db_tests.answers(answer_id, question_id, answer_text, answer_right) values(9, 1, 'answer_1_3', null); --no error
 
 -- 3.3 проверка триггера update
 update db_tests.answers set answer_right = null where answer_id = 6; --no errors
 update db_tests.answers set question_id = 2 where answer_id in (5,6); -- no error
-update db_tests.answers set question_id = 2 where answer_id = 8; -- error
+update db_tests.answers set question_id = 2 where answer_id = 9; -- error
+
+-- 3.4 проверка индекса на правильный ответ
+INSERT INTO db_tests.answers(answer_id, question_id, answer_text, answer_right) values(10, 1, 'answer_1_4', true); --error
+INSERT INTO db_tests.answers(answer_id, question_id, answer_text, answer_right) values(11, 1, 'answer_1_5', null); --no error
+
+
+
