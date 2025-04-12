@@ -13,7 +13,7 @@ public class Server implements Closeable {
     public Server(int port) {
         this.port = port;
         clients = new CopyOnWriteArrayList<>();
-        //authenticatedProvider = new InMemoryAuthenticationProvider(this);
+        // authenticatedProvider = new InMemoryAuthenticationProvider(this);
         authenticatedProvider = new PostgresAuthenticationProvider(this);
         authenticatedProvider.initialize();
     }
@@ -64,7 +64,8 @@ public class Server implements Closeable {
                             new String[]{
                                     "/w",
                                     authorKick,
-                                    "cреди подключенных пользователей не найден с username = \"" + kickUsername + "\""
+                                    "cреди подключенных пользователей не найден с username = \"" +
+                                            kickUsername + "\""
                             }
                     );
                     return true;
@@ -86,13 +87,13 @@ public class Server implements Closeable {
         return true;
     }
 
-    /**
+    /** Sends a message to the specified user.
      *
-     * @param clientFrom
-     * @param parts
+     * @param clientFrom from user
+     * @param parts specified user and words of message
      * @return false if command is not valid and not sended message, true - if sended message
      */
-    boolean sendMessageToUsername(ClientHandler clientFrom, String[] parts){
+    boolean sendMessageToUsername(ClientHandler clientFrom, String[] parts) {
         if (parts.length < 3) {
             return false;
         }
@@ -101,9 +102,11 @@ public class Server implements Closeable {
         ClientHandler recepientClient = clientByUsername(username);
         StringBuilder message = new StringBuilder();
         if (recepientClient == null) {
-            //отправка автору сообщения, что не найден пользователь которому предназначалось сообщение
+            // отправка автору сообщения, что не найден пользователь которому предназначалось сообщение
             recepientClient = clientFrom;
-            message.append("cреди подключенных пользователей не найден с username = \"").append(username).append("\"");
+            message.append("cреди подключенных пользователей не найден с username = \"")
+                    .append(username)
+                    .append("\"");
             System.out.println(message);
         }
         if (message.length() == 0) {
@@ -116,7 +119,7 @@ public class Server implements Closeable {
         return true;
     }
 
-    void printClients(ClientHandler authorCommand){
+    void printClients(ClientHandler authorCommand) {
         if (authorCommand.getUser().checkRole(authenticatedProvider.getRole("admin"))) {
             String username = authorCommand.getUsername();
             StringBuilder message = new StringBuilder("Подключенные клиенты:");
@@ -144,16 +147,16 @@ public class Server implements Closeable {
     @Override
     public void close() throws IOException {
         if (clients != null) {
-            boolean Success = true;
+            boolean success = true;
             for (ClientHandler clientHandler : clients) {
                 try {
                     clientHandler.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Success = false;
+                    success = false;
                 }
             }
-            if (!Success) {
+            if (!success) {
                 throw new IOException("Возникли ошибки при закрытии клиентов");
             }
         }

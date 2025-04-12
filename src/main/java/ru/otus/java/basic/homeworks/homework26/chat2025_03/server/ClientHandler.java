@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.util.List;
 
 public class ClientHandler implements Closeable {
+    @SuppressWarnings("checkstyle:ConstantName")
     private static final List<String> allowedCommandsBeforeAuth = List.of("/exit", "/auth", "/reg");
+    @SuppressWarnings("checkstyle:ConstantName")
     private static final List<String> allowedCommandsAfterAuth = List.of("/exit", "/w", "/kick", "/clients");
     private final Server server;
     private final Socket client;
@@ -33,7 +35,8 @@ public class ClientHandler implements Closeable {
                     handleCommandsClient();
                 }
             } catch (IOException e) {
-                System.out.printf("Ошибка при коммуникации с клиентом \"%s\": %s%n", username, e.getMessage());
+                System.out.printf("Ошибка при коммуникации с клиентом \"%s\": %s%n",
+                        username, e.getMessage());
                 e.printStackTrace();
             } finally {
                 try {
@@ -53,21 +56,26 @@ public class ClientHandler implements Closeable {
         return username;
     }
 
-
     public void setUsername(String username) {
         this.username = username;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
-    /**
-     * @return true - success authentication with client, else - false
+
+    /** Performs client authentication.
+     *
+     * @return true - success authentication with client, else - false.
      */
+    @SuppressWarnings("checkstyle:MissingSwitchDefault")
     public boolean authenticateClient() throws IOException {
         System.out.println("authenticateClient()");
         while (true) {
             String message = in.readUTF();
-            if (message.isEmpty()) {continue;}
+            if (message.isEmpty()) {
+                continue;
+            }
             String[] parts = message.split(" ");
             String command = parts[0];
             if (!allowedCommandsBeforeAuth.contains(command)) {
@@ -106,7 +114,9 @@ public class ClientHandler implements Closeable {
         System.out.println("handleCommandsClient()");
         while (true) {
             String message = in.readUTF();
-            if (message.isEmpty()) {continue;}
+            if (message.isEmpty()) {
+                continue;
+            }
 
             String[] parts = message.split(" ");
             String command = parts[0];
@@ -116,13 +126,13 @@ public class ClientHandler implements Closeable {
             }
             switch (command) {
                 case "/w":
-                    if (!server.sendMessageToUsername(this, parts)){
+                    if (!server.sendMessageToUsername(this, parts)) {
                         sendMessage("Не указаны параметры команды: /w username message");
                         continue;
                     }
                     break;
                 case "/kick":
-                    if (!server.kickUsername(this, parts)){
+                    if (!server.kickUsername(this, parts)) {
                         sendMessage("Не указаны параметры команды: /kick username");
                         continue;
                     }

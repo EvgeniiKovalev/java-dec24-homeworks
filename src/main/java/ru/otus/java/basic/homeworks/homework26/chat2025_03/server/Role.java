@@ -9,12 +9,12 @@ public class Role {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Role() {
         this(-1, "");
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override

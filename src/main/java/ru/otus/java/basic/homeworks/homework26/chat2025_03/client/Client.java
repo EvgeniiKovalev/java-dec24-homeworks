@@ -1,4 +1,8 @@
-import java.io.*;
+import java.io.Closeable;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -42,7 +46,8 @@ public class Client implements Closeable, Runnable {
                         break;
                     case "/authok":
                         username = parts[1];
-                        System.out.println("Аутентификация прошла успешно с именем пользователя: " + username);
+                        System.out.println("Аутентификация прошла успешно с именем пользователя: " +
+                                username);
                         break;
                     case "/regok":
                         username = parts[1];
@@ -105,7 +110,8 @@ public class Client implements Closeable, Runnable {
 
     @Override
     public void close() throws IOException {
-        System.out.printf("Отключение пользователя \"%s\", latch.getCount() = %d", username, latch.getCount());
+        System.out.printf("Отключение пользователя \"%s\", latch.getCount() = %d",
+                username, latch.getCount());
         safetyClose(in);
         safetyClose(out);
         safetyClose(socket);
