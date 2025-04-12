@@ -13,7 +13,8 @@ public class Server implements Closeable {
     public Server(int port) {
         this.port = port;
         clients = new CopyOnWriteArrayList<>();
-        authenticatedProvider = new InMemoryAuthenticationProvider(this);
+        //authenticatedProvider = new InMemoryAuthenticationProvider(this);
+        authenticatedProvider = new PostgresAuthenticationProvider(this);
         authenticatedProvider.initialize();
     }
 
@@ -47,13 +48,13 @@ public class Server implements Closeable {
         }
     }
 
-    boolean kickUsername(ClientHandler authorCommand, String[] parts) throws IOException {
+    boolean kickUsername(ClientHandler authorCommand, String[] parts) {
         if (parts.length != 2) {
             return false;
         }
 
         try {
-            if (authorCommand.getUser().checkRole(Role.ADMIN)) {
+            if (authorCommand.getUser().checkRole(authenticatedProvider.getRole("admin"))) {
                 String kickUsername = parts[1];
                 String authorKick = authorCommand.getUsername();
                 ClientHandler kickClient = clientByUsername(kickUsername);
@@ -102,8 +103,8 @@ public class Server implements Closeable {
         if (recepientClient == null) {
             //отправка автору сообщения, что не найден пользователь которому предназначалось сообщение
             recepientClient = clientFrom;
-            message.append("cреди подключенных пользователей не найден с username = \"" + username + "\"");
-            System.out.println(message.toString());
+            message.append("cреди подключенных пользователей не найден с username = \"").append(username).append("\"");
+            System.out.println(message);
         }
         if (message.length() == 0) {
             message.append(clientFrom.getUsername()).append(" :");
@@ -116,14 +117,14 @@ public class Server implements Closeable {
     }
 
     void printClients(ClientHandler authorCommand){
-        if (authorCommand.getUser().checkRole(Role.ADMIN)) {
+        if (authorCommand.getUser().checkRole(authenticatedProvider.getRole("admin"))) {
             String username = authorCommand.getUsername();
             StringBuilder message = new StringBuilder("Подключенные клиенты:");
             for (ClientHandler client : clients) {
                 message.append("\r\n").append(client.getUsername());
             }
             sendMessageToUsername(authorCommand, new String[]{"/w", username, message.toString()});
-            System.out.println(message.toString());
+            System.out.println(message);
         }
     }
 

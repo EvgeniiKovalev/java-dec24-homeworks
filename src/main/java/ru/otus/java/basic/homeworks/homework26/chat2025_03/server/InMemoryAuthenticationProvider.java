@@ -4,6 +4,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class InMemoryAuthenticationProvider implements AuthenticatedProvider {
     private final Server server;
     private final List<User> users;
+    private final static Role adminRole = new Role(1, "admin");
+    private final static Role userRole = new Role(2, "user");
+
+    @Override
+    public Role getRole(String nameRole) {
+        switch (nameRole) {
+            case "admin":
+                return adminRole;
+            case "user":
+                return userRole;
+            default:
+                return null;
+        }
+    }
 
     public InMemoryAuthenticationProvider(Server server) {
         this.server = server;
@@ -20,6 +34,13 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvider {
     @Override
     public void initialize() {
         System.out.println("Сервис аутентификации запущен: In memory режим");
+    }
+
+    public void setDefaultRoles(User user){
+        user.addRole(userRole);
+        if (user.getUsername().equalsIgnoreCase("admin") || user.getUsername().equalsIgnoreCase("root")) {
+            user.addRole(adminRole);
+        }
     }
 
     private User getUserByLoginAndPassword(String login, String password) {
@@ -51,7 +72,7 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvider {
             return false;
         }
 
-        authUser.setDefaultRoles();
+        setDefaultRoles(authUser);
         clientHandler.setUser(authUser);
         clientHandler.setUsername(authName);
 
@@ -95,7 +116,7 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvider {
         }
 
         User user = new User(login, password, username);
-        user.setDefaultRoles();
+        setDefaultRoles(user);
         users.add(user);
         clientHandler.setUser(user);
         clientHandler.setUsername(username);
