@@ -2,6 +2,7 @@ package ru.otus.java.basic.homeworks.homework27;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class StudyGenerics {
     public void test1() {
@@ -101,6 +102,27 @@ public class StudyGenerics {
         System.out.println("fruitBox2.compare(fruitBox1) = " + fruitBox2.compare(fruitBox1));
         System.out.println("appleBox1.compare(fruitBox1) = " + appleBox1.compare(fruitBox1));
         System.out.println("orangeBox1.compare(fruitBox2) = " + orangeBox1.compare(fruitBox2));
+        System.out.println();
+
+        System.out.println("тест для род. типа: проверяем что нельзя перекладывать когда " +
+                "коробка источник = коробке назначения");
+        System.out.println("до переноса fruitBox1 -> fruitBox1");
+        System.out.println("fruitBox1 size = " + fruitBox1.size());
+        System.out.println("fruitBox1->fruitBox1");
+        fruitBox1.transferTo(fruitBox1);
+        System.out.println("после переноса fruitBox1 -> fruitBox1");
+        System.out.println("fruitBox1 size = " + fruitBox1.size());
+        System.out.println();
+
+        System.out.println("тест для типа потомка: проверяем что нельзя перекладывать когда " +
+                "коробка источник = коробке назначения");
+        System.out.println("до переноса orangeBox1 -> orangeBox1");
+        System.out.println("orangeBox1 size = " + orangeBox1.size());
+        System.out.println("orangeBox1->orangeBox1");
+        orangeBox1.transferTo(orangeBox1);
+        System.out.println("после переноса orangeBox1 -> orangeBox1");
+        System.out.println("orangeBox1 size = " + orangeBox1.size());
+        System.out.println();
     }
 
     public class Fruit {
@@ -146,7 +168,23 @@ public class StudyGenerics {
             return box.size();
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Box<?> box1 = (Box<?>) o;
+            return Objects.equals(box, box1.box);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(box);
+        }
+
         public void transferTo(Box<? super T> targetBox) {
+            if (targetBox == this) {
+                System.out.println("Коробка источник не должна совпадать с коробкой назначением");
+                return;
+            }
             for (T item : box) {
                 targetBox.add(item);
             }
