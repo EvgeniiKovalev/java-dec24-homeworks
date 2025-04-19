@@ -16,23 +16,23 @@ import java.util.concurrent.Executors;
  * После печати всех символов программа должна завершиться
  */
 public class AppHw30 {
-    static final Object monitor = new Object();
+    static final Object MONITOR = new Object();
     static int executionOrder = 1;
 
     private static void waitForYourTurn(int expectedOrder) throws InterruptedException {
         while (executionOrder != expectedOrder) {
-            monitor.wait();
+            MONITOR.wait();
         }
     }
 
     public static void printC() {
-        synchronized (monitor) {
+        synchronized (MONITOR) {
             try {
                 for (int i = 0; i < 5; i++) {
                     waitForYourTurn(3);
                     System.out.print("C");
                     executionOrder = 1;
-                    monitor.notifyAll();
+                    MONITOR.notifyAll();
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -46,13 +46,13 @@ public class AppHw30 {
         pool.submit(new Runnable() {
             @Override
             public void run() {
-                synchronized (monitor) {
+                synchronized (MONITOR) {
                     try {
                         for (int i = 0; i < 5; i++) {
                             waitForYourTurn(2);
                             System.out.print("B");
                             executionOrder = 3;
-                            monitor.notifyAll();
+                            MONITOR.notifyAll();
                         }
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -61,13 +61,13 @@ public class AppHw30 {
             }
         });
         pool.execute(() -> {
-            synchronized (monitor) {
+            synchronized (MONITOR) {
                 try {
                     for (int i = 0; i < 5; i++) {
                         waitForYourTurn(1);
                         System.out.print("A");
                         executionOrder = 2;
-                        monitor.notifyAll();
+                        MONITOR.notifyAll();
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
