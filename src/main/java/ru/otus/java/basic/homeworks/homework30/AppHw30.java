@@ -44,23 +44,22 @@ public class AppHw30 {
         ExecutorService pool = Executors.newFixedThreadPool(3);
         pool.submit(AppHw30::printC);
         pool.submit(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (monitor) {
-                        try {
-                            for (int i = 0; i < 5; i++) {
-                                waitForYourTurn(2);
-                                System.out.print("B");
-                                executionOrder = 3;
-                                monitor.notifyAll();
-                            }
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+            @Override
+            public void run() {
+                synchronized (monitor) {
+                    try {
+                        for (int i = 0; i < 5; i++) {
+                            waitForYourTurn(2);
+                            System.out.print("B");
+                            executionOrder = 3;
+                            monitor.notifyAll();
                         }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
-        );
+        });
         pool.execute(() -> {
             synchronized (monitor) {
                 try {
