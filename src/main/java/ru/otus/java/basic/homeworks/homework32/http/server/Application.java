@@ -11,6 +11,10 @@ package ru.otus.java.basic.homeworks.homework32.http.server;
  */
 public class Application {
     public static void main(String[] args) {
-         new HttpServer(8189).start();
+        try (HttpServer server = new HttpServer(8189, 10)) {
+            server.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
