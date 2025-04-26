@@ -1,6 +1,13 @@
 package ru.otus.java.basic.homeworks.homework31;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,14 +28,16 @@ class AppHw31Test {
         assertTrue(AppHw31.methodTwo(new int[]{1, 2, 1, 2, 2}));
     }
 
-    @Test
-    void methodTwoFailTest1() {
-        assertFalse(AppHw31.methodTwo(new int[]{2, 2, 2, 2}));
+    @ParameterizedTest
+    @MethodSource("methodTwoDataFail")
+    void methodTwoFailTest(int[] data) {
+        assertFalse(AppHw31.methodTwo(data));
     }
 
-    @Test
-    void methodTwoFailTest2() {
-        assertFalse(AppHw31.methodTwo(new int[]{1, 2, 3}));
+    private static Stream<Arguments> methodTwoDataFail() {
+        List<Arguments> out = new ArrayList<>();
+        out.add(Arguments.arguments((Object) new int[]{2, 2, 2, 2}));
+        out.add(Arguments.arguments((Object) new int[]{1, 2, 3}));
+        return out.stream();
     }
-
 }
