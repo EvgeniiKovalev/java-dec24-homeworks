@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class HttpServer implements AutoCloseable {
     private final int port;
@@ -52,18 +53,27 @@ public class HttpServer implements AutoCloseable {
         }
     }
 
+    private void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown();
+        try {
+            if (!pool.awaitTermination(3, TimeUnit.SECONDS)) {
+                pool.shutdownNow();
+                if (!pool.awaitTermination(3, TimeUnit.SECONDS)) {
+                    System.err.println("Pool did not terminate");
+                }
+            }
+        } catch (InterruptedException ie) {
+            pool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private void createHookStopServer() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\nПолучен сигнал завершения (Ctrl+C). Останавливаем сервер...");
             isRunning = false;
             if (!pool.isShutdown()) {
-                pool.shutdown();
-            }
-            System.out.println("Ждем 3 секунды для завершения обработки начатых, но не завершенных запросов");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                shutdownAndAwaitTermination(pool);
             }
             try {
                 if (serverSocket != null && !serverSocket.isClosed()) {
