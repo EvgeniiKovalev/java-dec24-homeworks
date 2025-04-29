@@ -26,6 +26,10 @@ public class HttpRequest {
         return method + " " + uri;
     }
 
+    public boolean containsParameter(String key) {
+        return parameters.containsKey(key);
+    }
+
     public String getParameter(String key) {
         return parameters.get(key);
     }
