@@ -2,13 +2,25 @@ package ru.otus.java.basic.http.server;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ru.otus.java.basic.http.server.exceptions.BadRequestException;
 
 public class HttpRequest {
-    private String rawRequest;
+    @SuppressWarnings("checkstyle:ConstantName")
+    private static final Logger logger = LogManager.getLogger(HttpRequest.class);
+    private final String rawRequest;
+    private final Map<String, String> parameters;
     private HttpMethod method;
-    private Map<String, String> parameters;
     private String uri;
     private String body;
+
+    public HttpRequest(String rawRequest) throws IllegalArgumentException {
+        this.rawRequest = rawRequest;
+        this.parameters = new HashMap<>();
+        this.parse();
+    }
 
     public HttpMethod getMethod() {
         return method;
@@ -34,16 +46,39 @@ public class HttpRequest {
         return parameters.get(key);
     }
 
-    public HttpRequest(String rawRequest) {
-        this.rawRequest = rawRequest;
-        this.parameters = new HashMap<>();
-        this.parse();
+    public <T> T getAndValidateParam(
+            String paramName,
+            Function<String, T> funcParse,
+            String errorFuncMessage
+    ) {
+        if (!containsParameter(paramName)) {
+            throw new BadRequestException(
+                    "INCORRECT_REQUEST_DATA",
+                    "Отсутствует параметр запроса '" + paramName + "'"
+            );
+        }
+
+        String paramValue = getParameter(paramName);
+        try {
+            return funcParse.apply(paramValue);
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "INCORRECT_REQUEST_PARAMETER",
+                    "Параметр '" + paramName + "' " + errorFuncMessage
+            );
+        }
     }
 
-    private void parse() {
+    private void parse() throws IllegalArgumentException {
         int startIndex = rawRequest.indexOf(' ');
         int endIndex = rawRequest.indexOf(' ', startIndex + 1);
-        this.method = HttpMethod.valueOf(rawRequest.substring(0, startIndex));
+        String httpMethod = rawRequest.substring(0, startIndex);
+        try {
+            this.method = HttpMethod.valueOf(httpMethod);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Необрабатываемый HTTP метод \"" + httpMethod + "\"", e);
+        }
+
         this.uri = rawRequest.substring(startIndex + 1, endIndex);
         if (uri.contains("?")) {
             String[] elements = uri.split("[?]");
@@ -55,18 +90,23 @@ public class HttpRequest {
             }
         }
 
-        if (method == HttpMethod.POST) {
-            this.body = rawRequest.substring(rawRequest.indexOf("\r\n\r\n"));
+        switch (method) {
+            case POST -> this.body = rawRequest.substring(rawRequest.indexOf("\r\n\r\n"));
+            case DELETE -> {
+                String[] elements = uri.split("[/]");
+                parameters.put("id", elements[2]);
+                this.uri = "/" + elements[1];
+            }
         }
     }
 
     public void info(boolean showRawRequest) {
         if (showRawRequest) {
-            System.out.println(rawRequest);
+            logger.info(rawRequest);
         }
-        System.out.println("METHOD: " + method);
-        System.out.println("URI: " + uri);
-        System.out.println("PARAMETERS: " + parameters);
-        System.out.println("BODY: " + body);
+        logger.info("METHOD: {}", method);
+        logger.info("URI: {}", uri);
+        logger.info("PARAMETERS: {}", parameters);
+        logger.info("BODY: {}", body);
     }
 }

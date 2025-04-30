@@ -12,6 +12,25 @@ angular.module('app', []).controller('indexController', function ($scope, $http)
         $http.post(contextPath + '/items', $scope.newProduct)
             .then(function (response) {
                 $scope.fillTable();
+                $scope.newProduct = {};
+            })
+            .catch(function (errorResponse) {
+                console.error('Ошибка при создании товара:', errorResponse);
+                const errorData = errorResponse.data;
+                let errorMessage = 'Произошла неизвестная ошибка при создании товара';
+
+                if (errorData) {
+                    if (errorData.description) {
+                        errorMessage = errorData.description;
+                    }
+                    else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                    else if (typeof errorData === 'string') {
+                        errorMessage = errorData;
+                    }
+                }
+                alert('Ошибка: ' + errorMessage);
             });
     };
 
@@ -21,6 +40,24 @@ angular.module('app', []).controller('indexController', function ($scope, $http)
             method: "DELETE"
         }).then(function (response) {
             $scope.fillTable();
+        })
+        .catch(function (errorResponse) {
+            console.error('Ошибка при удалении товара:', errorResponse);
+            const errorData = errorResponse.data;
+            let errorMessage = 'Произошла неизвестная ошибка при удалении товара';
+
+            if (errorData) {
+                if (errorData.description) {
+                    errorMessage = errorData.description;
+                }
+                else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+                else if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                }
+            }
+            alert('Ошибка: ' + errorMessage);
         });
     }
 

@@ -1,17 +1,16 @@
 package ru.otus.java.basic.http.server.processors;
 
 import com.google.gson.Gson;
-import ru.otus.java.basic.http.server.HttpRequest;
-import ru.otus.java.basic.http.server.application.Item;
-import ru.otus.java.basic.http.server.application.ItemsRepository;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import ru.otus.java.basic.http.server.HttpRequest;
+import ru.otus.java.basic.http.server.application.Item;
+import ru.otus.java.basic.http.server.application.ItemsRepository;
 
 public class GetItemProcessor implements RequestProcessor {
-    private ItemsRepository itemsRepository;
+    private final ItemsRepository itemsRepository;
 
     public GetItemProcessor(ItemsRepository itemsRepository) {
         this.itemsRepository = itemsRepository;
@@ -23,8 +22,7 @@ public class GetItemProcessor implements RequestProcessor {
             Long id = Long.parseLong(request.getParameter("id"));
             Item item = itemsRepository.findById(id);
             if (item == null) {
-                String response = "" +
-                        "HTTP/1.1 404 Not Found\r\n" +
+                String response = "HTTP/1.1 404 Not Found\r\n" +
                         "Content-Type: text/html\r\n" +
                         "\r\n" +
                         "RESOURCE NOT FOUND";
@@ -33,8 +31,7 @@ public class GetItemProcessor implements RequestProcessor {
             }
             Gson gson = new Gson();
             String itemResponse = gson.toJson(item);
-            String response = "" +
-                    "HTTP/1.1 200 OK\r\n" +
+            String response = "HTTP/1.1 200 OK\r\n" +
                     "Content-Type: application/json\r\n" +
                     "\r\n" +
                     itemResponse;
@@ -44,8 +41,7 @@ public class GetItemProcessor implements RequestProcessor {
         List<Item> items = itemsRepository.getAllItems();
         Gson gson = new Gson();
         String itemsResponse = gson.toJson(items);
-        String response = "" +
-                "HTTP/1.1 200 OK\r\n" +
+        String response = "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: application/json\r\n" +
                 "\r\n" +
                 itemsResponse;

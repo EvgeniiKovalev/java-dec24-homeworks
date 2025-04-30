@@ -1,11 +1,25 @@
 package ru.otus.java.basic.http.server.application;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Item {
     private Long id;
     private String title;
     private BigDecimal price;
+
+    public Item() {
+    }
+
+    public Item(String title, BigDecimal price) {
+        this.title = title;
+        this.price = price;
+    }
+
+    public Item(Long id, String title, BigDecimal price) {
+        this(title, price);
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -31,12 +45,20 @@ public class Item {
         this.price = price;
     }
 
-    public Item() {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(getId(), item.getId());
     }
 
-    public Item(Long id, String title, BigDecimal price) {
-        this.id = id;
-        this.title = title;
-        this.price = price;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Item{id = %d, title = %s, price = %.2f }", id, title, price);
     }
 }

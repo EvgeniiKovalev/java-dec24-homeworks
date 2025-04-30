@@ -7,6 +7,12 @@ public class ErrorDto {
     private String description;
     private String datetime;
 
+    public ErrorDto(String code, String description) {
+        this.code = code;
+        this.description = description;
+        this.datetime = LocalDateTime.now().toString();
+    }
+
     public String getCode() {
         return code;
     }
@@ -29,11 +35,5 @@ public class ErrorDto {
 
     public void setDatetime(String datetime) {
         this.datetime = datetime;
-    }
-
-    public ErrorDto(String code, String description) {
-        this.code = code;
-        this.description = description;
-        this.datetime = LocalDateTime.now().toString();
     }
 }
