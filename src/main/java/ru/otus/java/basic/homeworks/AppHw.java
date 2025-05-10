@@ -1,7 +1,7 @@
 package ru.otus.java.basic.homeworks;
 
-public class Application {
+public class AppHw {
     public static void main(String[] args) {
-        System.out.println("Homeworks");
+        System.out.println("AppHw");
     }
 }
